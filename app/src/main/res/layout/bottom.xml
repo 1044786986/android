@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="57dp"
+    android:background="#F0F0F0">
+
+    <LinearLayout
+        android:id="@+id/linearLayout_chat"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <ImageButton
+            android:id="@+id/ib_tab_chat"
+            android:layout_width="40dp"
+            android:layout_height="35dp"
+            android:background="#F0F0F0"
+            android:clickable="false"
+            android:src="@drawable/chat_normal" >
+            </ImageButton>
+
+        <TextView
+            android:id="@+id/tvChat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="聊天"
+            android:textColor="#000" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout_address"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <ImageButton
+            android:id="@+id/ib_tab_address"
+            android:layout_width="40dp"
+            android:layout_height="35dp"
+            android:background="#F0F0F0"
+            android:clickable="false"
+            android:src="@drawable/address_normal" />
+
+        <TextView
+            android:id="@+id/tvAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="通讯录"
+            android:textColor="#000" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout_share"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <ImageButton
+            android:id="@+id/ib_tab_share"
+            android:layout_width="40dp"
+            android:layout_height="35dp"
+            android:clickable="false"
+            android:background="#F0F0F0"
+            android:src="@drawable/share_normal" />
+
+        <TextView
+            android:id="@+id/tvShare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="社区"
+            android:textColor="#000" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout_my"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <ImageButton
+            android:id="@+id/ib_tab_my"
+            android:layout_width="40dp"
+            android:layout_height="35dp"
+            android:background="#F0F0F0"
+            android:clickable="false"
+            android:src="@drawable/more_normal" />
+
+        <TextView
+            android:id="@+id/tvMy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="我的"
+            android:textColor="#000" />
+    </LinearLayout>
+</LinearLayout>

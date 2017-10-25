@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/fragment_chat_layout"
+    android:clickable="true">
+
+    <RelativeLayout
+        android:background="#4b4c4f"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+    <TextView
+        android:text="聊天"
+        android:textColor="#fff"
+        android:textSize="25dp"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
+    <SearchView
+        android:id="@+id/SearchView_chat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></SearchView>
+
+    <LinearLayout
+        android:background="@color/SpaceBgColor"
+        android:layout_width="match_parent"
+        android:layout_height="15dp"></LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/RecyclerView_chat"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+    </LinearLayout>
+
+</LinearLayout>
