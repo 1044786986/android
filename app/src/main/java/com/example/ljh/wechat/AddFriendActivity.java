@@ -43,7 +43,7 @@ public class AddFriendActivity extends AppCompatActivity implements View.OnClick
     private TextView tvBack;
     private LinearLayout activity_addfriend_layout;
 
-    private String url = "http://192.168.191.1:8080/wechat/SearchFriendsServlet";
+    private String url = MainActivity.SearchFriendsServlet;
     private String username = null;
     private String result;
     private String friend = null; //判断该用户是否已经是好友

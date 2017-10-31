@@ -20,6 +20,8 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -60,6 +62,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
@@ -123,7 +126,7 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
     ImageLoader imageLoader;
     static RecycleViewAdapter_UserChat recycleViewAdapter_userChat;
 
-    AudioFinishRecorderListener audioFinishRecorderListener;
+   // AudioFinishRecorderListener audioFinishRecorderListener;
 
     public fragment_UserChat(String toUser){
         this.toUser = toUser;
@@ -133,6 +136,7 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_userchat,null);
         path = getActivity().getApplication().getFilesDir().getPath();
+
         fragmentChat = new FragmentChat();
         mediaRecorderManager = new MediaRecorderManager(getActivity());
         dialogManager = new DialogManager(getActivity());
@@ -149,13 +153,13 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
         return view;
     }
 
-    public interface AudioFinishRecorderListener{
+  /*  public interface AudioFinishRecorderListener{
         void onFinish(float seconds,String filePath);
     }
 
     public void setAudioFinishRecorderListener(AudioFinishRecorderListener audioFinishRecorderListener){
         this.audioFinishRecorderListener = audioFinishRecorderListener;
-    }
+    }*/
 
     @Override
     public void onClick(View view) {
@@ -204,8 +208,7 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
                 }
                 break;
             case R.id.ivMessage:
-                getPermission();
-                Toast.makeText(getActivity(),"aa",Toast.LENGTH_SHORT).show();
+                UserChatActivity.userChatActivity.showFragment(UserChatActivity.USERINFO);
                 break;
             case R.id.linearLayout_UserChat:
                 hideInputMethod(view);
@@ -271,17 +274,15 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
                             else if(STATE_RECORDING && isVocing){
                                 Log.i("tag","---------成功录音");
                                 mediaRecorderManager.release();
-                                if(audioFinishRecorderListener != null){
+                                /*if(audioFinishRecorderListener != null){
                                     audioFinishRecorderListener.onFinish(time,MediaRecorderManager.CurrentFilePath);
-                                }
+                                }*/
                                 sendVoiceMessage(MediaRecorderManager.fileName);
                                 dialogManager.dismissDialog();
-                                //insertIntoSqlite(MainActivity.username,toUser,null,null,getDate(),);
                             }
                             isVocing = false;
                             STATE_RECORDING = false;
                             time = 0f;
-                            //dialogManager.dismissDialog();  //隐藏对话框
                             break;
                         }
                     }
@@ -503,68 +504,77 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
     /**
      * 发送文字消息给好友
      */
-    public void SendTextMessage(final String message){
-        new Thread(){
-            @Override
-            public void run() {
-                try {
+    public void SendTextMessage(final String message) {
+        if (message == null || message == "") {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getActivity(), "不能发送空白消息", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+
+            new Thread() {
+                @Override
+                public void run() {
                     try {
-                        Socket socket = new Socket("192.168.191.1",8888);
-                        OutputStream outputStream = socket.getOutputStream();
-                        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream,"UTF-8");
-                        PrintWriter printWriter = new PrintWriter(outputStreamWriter);
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("type","text");
-                        jsonObject.put("message",message);
-                        jsonObject.put("toUser",toUser);
-                        jsonObject.put("fromUser",MainActivity.username);
-                        String date = getDate();
-                        jsonObject.put("date",date);
-                        printWriter.print(jsonObject);
-                        printWriter.flush();
-                        printWriter.close();
-                        outputStream.close();
-                        outputStreamWriter.close();
-                        socket.close();
-                        insertIntoSqlite(MainActivity.username,toUser,message,null,date,null);//保存聊天记录到sqlite
-                        fragmentChat.addDatalist(MainActivity.username,toUser,message,null,date,null);
-                    } catch (IOException e) {
+                        try {
+                            insertIntoSqlite(MainActivity.username, toUser, message, null, getDate(), null);//保存聊天记录到sqlite
+                            fragmentChat.addDatalist(MainActivity.username, toUser, message, null, getDate(), null);
+
+                            Socket socket = new Socket(MainActivity.Ip, 8888);
+                            OutputStream outputStream = socket.getOutputStream();
+                            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, "UTF-8");
+                            PrintWriter printWriter = new PrintWriter(outputStreamWriter);
+                            JSONObject jsonObject = new JSONObject();
+                            jsonObject.put("type", "text");
+                            jsonObject.put("message", message);
+                            jsonObject.put("toUser", toUser);
+                            jsonObject.put("fromUser", MainActivity.username);
+                            printWriter.print(jsonObject);
+                            printWriter.flush();
+                            printWriter.close();
+                            outputStream.close();
+                            outputStreamWriter.close();
+                            socket.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                }catch (JSONException e) {
-                    e.printStackTrace();
                 }
-            }
-        }.start();
+            }.start();
+        }
     }
 
     /**
      *发送图片消息给好友
      */
-    public void sendImageMessage(final List<PhotoInfo> resultList){
-        new Thread(){
+    public void sendImageMessage(final List<PhotoInfo> resultList) {
+        new Thread() {
             @Override
             public void run() {
                 try {
-                    for(int i=0;i < resultList.size();i++){
-                        Socket socket = new Socket("192.168.191.1",8888);
-                        OutputStream outputStream = socket.getOutputStream();
-                        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream,"UTF-8");
-                        PrintWriter printWriter = new PrintWriter(outputStreamWriter);
-
+                    for (int i = 0; i < resultList.size(); i++) {
                         String photoInfo = resultList.get(i).getPhotoPath();
                         Bitmap bitmap = CompressImage(BitmapFactory.decodeFile(photoInfo));//获取并压缩图片
                         byte image[] = image(bitmap);
-                        String imageString = Base64.encodeToString(image,Base64.DEFAULT);
-                        //list.add(new SendImageMessageBean(imageString));
-                        insertIntoSqlite(MainActivity.username,toUser,null,image,getDate(),null);
-                        fragmentChat.addDatalist(MainActivity.username,toUser,null,image,getDate(),null);
+                        String imageString = Base64.encodeToString(image, Base64.DEFAULT);
+
+                        insertIntoSqlite(MainActivity.username, toUser, null, image, getDate(), null);
+                        fragmentChat.addDatalist(MainActivity.username, toUser, null, image, getDate(), null);
+
+                        Socket socket = new Socket(MainActivity.Ip, 8888);
+                        OutputStream outputStream = socket.getOutputStream();
+                        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, "UTF-8");
+                        PrintWriter printWriter = new PrintWriter(outputStreamWriter);
 
                         JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("type","sendImageMessage");
-                        jsonObject.put("fromUser",MainActivity.username);
-                        jsonObject.put("toUser",toUser);
-                        jsonObject.put("image",imageString);
+                        jsonObject.put("type", "sendImageMessage");
+                        jsonObject.put("fromUser", MainActivity.username);
+                        jsonObject.put("toUser", toUser);
+                        jsonObject.put("image", imageString);
                         printWriter.println(jsonObject);
                         printWriter.flush();
                         printWriter.close();
@@ -584,6 +594,7 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
                 }
             }
         }.start();
+
     }
 
     public void sendCameraImageMessage(final Bitmap bitmap){
@@ -591,15 +602,15 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
             @Override
             public void run() {
                 try {
-                        Socket socket = new Socket("192.168.191.1",8888);
-                        OutputStream outputStream = socket.getOutputStream();
-                        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream,"UTF-8");
-                        PrintWriter printWriter = new PrintWriter(outputStreamWriter);
                         byte image[] = image(bitmap);
                         String imageString = Base64.encodeToString(image,Base64.DEFAULT);
                         insertIntoSqlite(MainActivity.username,toUser,null,image,getDate(),null);
                         fragmentChat.addDatalist(MainActivity.username,toUser,null,image,getDate(),null);
 
+                        Socket socket = new Socket(MainActivity.Ip,8888);
+                        OutputStream outputStream = socket.getOutputStream();
+                        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream,"UTF-8");
+                        PrintWriter printWriter = new PrintWriter(outputStreamWriter);
                         JSONObject jsonObject = new JSONObject();
                         jsonObject.put("type","sendImageMessage");
                         jsonObject.put("fromUser",MainActivity.username);
@@ -632,7 +643,10 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
             @Override
             public void run() {
                 try {
-                    Socket socket = new Socket("192.168.191.1",8888);
+                    insertIntoSqlite(MainActivity.username,toUser,null,null,getDate(),fileName);
+                    fragmentChat.addDatalist(MainActivity.username,toUser,null,null,getDate(),fileName);
+
+                    Socket socket = new Socket(MainActivity.Ip,8888);
                     OutputStream outputStream = socket.getOutputStream();
                     //OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream,"UTF-8");
                     PrintWriter printWriter = new PrintWriter(outputStream);
@@ -663,9 +677,6 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
                     outputStream.close();
                     //outputStreamWriter.close();
                     socket.close();
-
-                    insertIntoSqlite(MainActivity.username,toUser,null,null,getDate(),fileName);
-                    fragmentChat.addDatalist(MainActivity.username,toUser,null,null,getDate(),fileName);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } catch (UnsupportedEncodingException e) {
@@ -745,26 +756,6 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
         } catch (IOException e) {
             e.printStackTrace();
         }*/
-    }
-
-    public void getPermission(){
-        if(ContextCompat.checkSelfPermission(getActivity(),Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS)
-                != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions
-                    (getActivity(),new String[]{Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS},1);
-        }
-        if(ContextCompat.checkSelfPermission(getActivity(),Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
-        }
-        if(ContextCompat.checkSelfPermission(getActivity(),Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
-        }
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.RECORD_AUDIO)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.RECORD_AUDIO}, 1);
-        }
     }
 
     public void initView(View view){

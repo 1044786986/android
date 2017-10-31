@@ -67,7 +67,7 @@ public class FragmentChat extends Fragment{
     private static Handler handler = new Handler(Looper.getMainLooper());
     private OkHttpClient okHttpClient;
 
-    private String url = "http://192.168.191.1:8080/wechat/SearchFriendsServlet";
+    private String url = MainActivity.SearchFriendsServlet;
 
     public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat,null,false);
@@ -188,20 +188,44 @@ public class FragmentChat extends Fragment{
             name = toUser;
         }
         //i等于datalist的长度的话,该用户不存在于聊天记录表,增加该用户和聊天记录
-        if(i == datalist.size()){
+        if(i == datalist.size() && fromUser.equals(MainActivity.username)){
+            List<Chat_LogBean>list = new ArrayList<Chat_LogBean>(); //临时聊天记录集合
+            list.add(new Chat_LogBean(fromUser,toUser,text,image,date,voicePath));
+            datalist.add(new List_chat_logBean(name,list,0));
+        }else if(i == datalist.size() && !fromUser.equals(MainActivity.username)){
             List<Chat_LogBean>list = new ArrayList<Chat_LogBean>(); //临时聊天记录集合
             list.add(new Chat_LogBean(fromUser,toUser,text,image,date,voicePath));
             datalist.add(new List_chat_logBean(name,list,1));
-        }else{
+        }
+        else if(i != datalist.size() && fromUser.equals(MainActivity.username)){   //我发送的消息
+            datalist.get(i).getList().add(new Chat_LogBean(fromUser,toUser,text,image,date,voicePath));
+            //updataFriendItem(i); //更新好友位置
+        }else if(i != datalist.size() && !fromUser.equals(MainActivity.username)){  //我接受的消息
             datalist.get(i).getList().add(new Chat_LogBean(fromUser,toUser,text,image,date,voicePath));
             datalist.get(i).setUnread(datalist.get(i).getUnread() + 1); //增加未读消息数量
-            updataFriendItem(i); //更新好友位置
+            //updataFriendItem(i); //更新好友位置
         }
+        updataFriendItem(i); //更新好友位置
 
         if(UserChatActivity.UserChat_State == 1) {  //更新聊天界面列表
             fragment_UserChat.updateAdapter();
         }else{
             updateAdapter();
+        }
+    }
+
+    /**
+     * 删除聊天记录
+     */
+    public void removeDatalist(String friendName){
+        int i=0;
+        for(i = 0;i<datalist.size();i++){
+            if(datalist.get(i).getUsername().equals(friendName)){
+                break;
+            }
+        }
+        if(i != datalist.size()){
+            datalist.remove(i);
         }
     }
 

@@ -321,7 +321,7 @@ public class ModifyHeadActivity extends AppCompatActivity {
 
     public void initView(){
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setLogo(R.mipmap.chat_normal);
+        actionBar.setLogo(R.drawable.chat_normal);
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("");
         actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this,R.drawable.actionbar_head));

@@ -78,7 +78,7 @@ public class AddFriendNoteActivity extends AppCompatActivity implements View.OnC
             @Override
             public void run() {
                 try {
-                    socket = new Socket("192.168.191.1",8888);
+                    socket = new Socket(MainActivity.Ip,8888);
                     OutputStream outputStream = socket.getOutputStream();
                     PrintWriter printWriter = new PrintWriter(outputStream);
                     data = etNote.getText()+"";

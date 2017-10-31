@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="true"
@@ -8,7 +9,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="#4b4c4f"
+        android:background="@color/TitleBarBgColor"
         android:paddingBottom="10dp"
         android:paddingTop="10dp">
 
@@ -19,7 +20,7 @@
             android:layout_centerInParent="true"
             android:text="用户名"
             android:textColor="#fff"
-            android:textSize="25dp" />
+            android:textSize="20dp" />
 
         <TextView
             android:id="@+id/tvBack"
@@ -29,9 +30,9 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_marginLeft="10dp"
-            android:layout_marginStart="13dp"
+            android:layout_marginStart="15dp"
             android:text="返回"
-            android:textColor="#fff"
+            android:textColor="@color/TitleBarTextColor"
             android:textSize="20dp" />
 
         <ImageView
@@ -43,7 +44,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginEnd="18dp"
             android:layout_marginRight="18dp"
-            android:src="@drawable/address_normal" />
+            android:src="@mipmap/ic_person_white_24dp" />
 
         <TextView
             android:id="@+id/tvNumber"
@@ -54,6 +55,12 @@
             android:text=""
             android:textColor="#fff"
             android:textSize="20dp" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:src="@mipmap/ic_chevron_left_white_24dp" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -103,7 +110,7 @@
             android:layout_alignTop="@+id/ivVoice"
             android:layout_marginEnd="10dp"
             android:layout_marginRight="10dp"
-            android:src="@drawable/add_address" />
+            android:src="@mipmap/ic_add_black_24dp" />
 
         <Button
             android:text="按住说话"

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp">
+
+        <ImageView
+            android:id="@+id/ivHead"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/address_normal" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvUserName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:text="珊珊"
+                android:textSize="15dp" />
+
+            <TextView
+                android:id="@+id/tvDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="2017-01-01" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:gravity="right"
+            android:layout_marginLeft="180dp"
+            android:layout_marginTop="0dp"
+            android:src="@mipmap/ic_launcher" />
+
+            <ImageView
+                android:src="@mipmap/ic_launcher"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="180dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp" />
+    </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvComment"
+            android:text="15"
+            android:layout_marginTop="7dp"
+            android:layout_marginLeft="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:text="90旬老太竟然拿"
+        android:textSize="17dp"
+        android:layout_marginLeft="5dp"
+        android:maxLines="1"
+        android:maxWidth="250dp"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content" />
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp" />
+
+</LinearLayout>

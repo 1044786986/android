@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,57 +31,32 @@ public class RecycleViewAdapter_UserChat extends RecyclerView.Adapter<RecycleVie
     private Bitmap myHead;
     private Bitmap friendHead;
     private Context context;
-    private static String voicePath = null;
+
     private boolean FriendIsStart = false; //是否正在播放朋友的语音
     private boolean MyIsStart = false;//是否正在播放自己的语音
+    private int pos = 0;
+    private int count = 1;
+    private final int MYPLAYING = 1; //正在播放我的语音
+    private final int FRIENDPLAYING = 2;//正在播放朋友的语音消息
+    private final int UNPLAY = 3; //没有播放语音
 
-    FragmentAddress fragmentAddress;
+    private Message message;
+    private Handler handler;
+
     FragmentMy fragmentMy;
     MediaPlayManager mediaPlayManager;
 
     RecycleViewAdapter_UserChat(Context context, List<Chat_LogBean>datalist){
         this.layoutInflater = LayoutInflater.from(context);
         this.datalist = datalist;
-        fragmentAddress = new FragmentAddress();
         fragmentMy = new FragmentMy();
         this.context = context;
+        handler = new Handler(context.getMainLooper());
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-           /* case R.id.ivVoice_left:
-                if(FriendIsStart == false && MyIsStart == false){
-                    MediaPlayManager.play
-                            (context.getApplicationContext().getFilesDir().getPath()+ "/" + voicePath,context);
-                    FriendIsStart = true;
-                }else if(FriendIsStart && MyIsStart == false){
-                    MediaPlayManager.pause();
-                    FriendIsStart = false;
-                }else if(FriendIsStart == false && MyIsStart){
-                    MediaPlayManager.pause();
-                    MediaPlayManager.play
-                            (context.getApplicationContext().getFilesDir().getPath()+ "/" + voicePath,context);
-                    FriendIsStart = true;
-                    MyIsStart = false;
-                }
-                break;
-            case R.id.ivVoice_right:
-                if(FriendIsStart == false && MyIsStart == false){
-                    MediaPlayManager.play
-                            (context.getApplicationContext().getFilesDir().getPath()+ "/" + voicePath,context);
-                    MyIsStart = true;
-                }else if(MyIsStart && FriendIsStart == false){
-                    MediaPlayManager.release();
-                    MyIsStart = false;
-                }else if(MyIsStart == false && FriendIsStart){
-                    MediaPlayManager.release();
-                    MediaPlayManager.play
-                            (context.getApplicationContext().getFilesDir().getPath()+ "/" + voicePath,context);
-                    MyIsStart = true;
-                    FriendIsStart = false;
-                }
-                break;*/
         }
     }
 
@@ -101,20 +78,21 @@ public class RecycleViewAdapter_UserChat extends RecyclerView.Adapter<RecycleVie
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        int time=0; //语音消息时长
+        int time = 0; //语音消息时长
         String fromUser = datalist.get(position).getFromUser(); //谁发的消息
         String text = datalist.get(position).getText(); //消息内容
         String date = datalist.get(position).getDate(); //发送时间
         byte head[] = datalist.get(position).getImage();  //发送的图片流
         final String voicePath = datalist.get(position).getVoicePath();//获取语音路径
-        if(voicePath != null){
-            time = getVoiceTime(context.getApplicationContext().getFilesDir().getPath()+ "/" + voicePath);
-            Log.i("tag","-------------VoiceTime=" + time);
+        if (voicePath != null) {
+            time = getVoiceTime(context.getApplicationContext().getFilesDir().getPath() + "/" + voicePath);
+            Log.i("tag", "-------------VoiceTime=" + time);
         }
+        holder.tvDate.setText(date);
         /**
          * 我发送的消息
          */
-        if(fromUser.equals(MainActivity.username)){ //我发给好友的消息
+        if (fromUser.equals(MainActivity.username)) { //我发给好友的消息
             /**
              * 隐藏所有控件
              */
@@ -135,40 +113,69 @@ public class RecycleViewAdapter_UserChat extends RecyclerView.Adapter<RecycleVie
             holder.ivMyHead.setImageBitmap(myHead);
             holder.ivMyHead.setVisibility(View.VISIBLE);
 
-            if(text != null ){
+            if (text != null) {
                 holder.tvMyText.setText(text);
                 holder.tvMyText.setVisibility(View.VISIBLE);
-            }else if(head != null){
-                Bitmap bitmap = BitmapFactory.decodeByteArray(head,0,head.length);
+            } else if (head != null) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(head, 0, head.length);
                 holder.ivMyImage.setImageBitmap(bitmap);
                 holder.ivMyImage.setVisibility(View.VISIBLE);
-            }else if(voicePath != null){
+            } else if (voicePath != null) {
                 holder.tvVoiceRight.setVisibility(View.VISIBLE);
-                holder.tvVoiceRight.setText(time+"s");
+                holder.tvVoiceRight.setText(time + "s");
                 holder.ivVoiceRight.setVisibility(View.VISIBLE);
                 holder.ivVoiceRight.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(FriendIsStart == false && MyIsStart == false){
-                            MediaPlayManager.play
-                                    (context.getApplicationContext().getFilesDir().getPath()+ "/" + voicePath,context);
-                            MyIsStart = true;
-                        }else if(MyIsStart && FriendIsStart == false){
-                            MediaPlayManager.pause();
+                        pos = position;
+                        if (FriendIsStart == false && MyIsStart == false) {
+                            MyIsStart = true;   //正在播放标志
+                            pos = position;
+                            playMyVoice(voicePath, holder.ivVoiceRight);    //开始播放
+                        } else if (MyIsStart && FriendIsStart == false && pos == position) {
                             MyIsStart = false;
-                        }else if(MyIsStart == false && FriendIsStart){
-                            MediaPlayManager.pause();
-                            MediaPlayManager.play
-                                    (context.getApplicationContext().getFilesDir().getPath()+ "/" + voicePath,context);
+                            MediaPlayManager.pause(holder.ivVoiceRight,handler);    //暂停播放
+                        } else if (MyIsStart && FriendIsStart == false && pos != position) {
+                            MediaPlayManager.pause(holder.ivVoiceRight,handler);
+                            playMyVoice(voicePath, holder.ivVoiceRight);
+                        } else if (MyIsStart == false && FriendIsStart) {
                             MyIsStart = true;
                             FriendIsStart = false;
+                            MediaPlayManager.pause(holder.ivVoiceRight,handler);    //暂停播放
+                            playMyVoice(voicePath, holder.ivVoiceRight);    //开始播放
                         }
+
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                try {
+                                    while (MyIsStart) {
+                                        handler.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                int resId = context.getResources().getIdentifier("v_anim" + count, "drawable",
+                                                        context.getPackageName());
+                                                count++;
+                                                if (count == 4) {
+                                                    count = 1;
+                                                }
+                                                holder.ivVoiceRight.setImageResource(resId);    //播放动画
+                                            }
+                                        });
+                                        Thread.sleep(500);
+                                    }
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }.start();
+
                     }
                 });
             }
 
 
-        }else if(!fromUser.equals(MainActivity.username)){  //好友发送的消息
+        } else if (!fromUser.equals(MainActivity.username)) {  //好友发送的消息
             holder.ivFriendImage.setVisibility(View.GONE);
             holder.tvFriendText.setVisibility(View.INVISIBLE);
             holder.ivVoiceLeft.setVisibility(View.GONE);
@@ -180,55 +187,81 @@ public class RecycleViewAdapter_UserChat extends RecyclerView.Adapter<RecycleVie
             holder.ivVoiceRight.setVisibility(View.GONE);
             holder.tvVoiceRight.setVisibility(View.GONE);
 
-            friendHead = fragmentAddress.getFriendHead(fromUser);
+            friendHead = FragmentAddress.getFriendHead(fromUser);
             holder.ivFriendHead.setImageBitmap(friendHead);
             holder.ivFriendHead.setVisibility(View.VISIBLE);
 
-            if(text != null ){
+            if (text != null) {
                 holder.tvFriendText.setText(text);
                 holder.tvFriendText.setVisibility(View.VISIBLE);
-            }else if(head != null){
-                Bitmap bitmap = BitmapFactory.decodeByteArray(head,0,head.length);
+            } else if (head != null) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(head, 0, head.length);
                 holder.ivFriendImage.setImageBitmap(bitmap);
                 holder.ivFriendImage.setVisibility(View.VISIBLE);
-            }else if(voicePath != null){
+            } else if (voicePath != null) {
                 holder.tvVoiceLeft.setVisibility(View.VISIBLE);
-                holder.tvVoiceLeft.setText(time+"s");
+                holder.tvVoiceLeft.setText(time + "s");
                 holder.ivVoiceLeft.setVisibility(View.VISIBLE);
                 holder.ivVoiceLeft.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(FriendIsStart == false && MyIsStart == false){
-                            MediaPlayManager.play
-                                    (context.getApplicationContext().getFilesDir().getPath()+ "/" + voicePath,context);
+                        pos = position;
+                        if (FriendIsStart == false && MyIsStart == false) {
                             FriendIsStart = true;
-                        }else if(FriendIsStart && MyIsStart == false){
-                            MediaPlayManager.release();
+                            playFriendVoice(voicePath, holder.ivVoiceLeft);
+                        } else if (FriendIsStart && MyIsStart == false && pos == position) {
                             FriendIsStart = false;
-                        }else if(FriendIsStart == false && MyIsStart){
-                            MediaPlayManager.release();
-                            MediaPlayManager.play
-                                    (context.getApplicationContext().getFilesDir().getPath()+ "/" + voicePath,context);
+                            MediaPlayManager.pause(holder.ivVoiceLeft,handler);
+                        } else if (FriendIsStart && MyIsStart == false && pos != position) {
+                            MediaPlayManager.pause(holder.ivVoiceLeft,handler);
+                            playFriendVoice(voicePath, holder.ivVoiceLeft);
+                        } else if (FriendIsStart == false && MyIsStart) {
                             FriendIsStart = true;
                             MyIsStart = false;
+                            MediaPlayManager.pause(holder.ivVoiceLeft,handler);
+                            playFriendVoice(voicePath, holder.ivVoiceLeft);
                         }
+
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                try {
+                                    while (FriendIsStart) {
+                                        handler.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                int resId = context.getResources().getIdentifier("v_anim" + count, "drawable",
+                                                        context.getPackageName());
+                                                count++;
+                                                if (count == 4) {
+                                                    count = 1;
+                                                }
+                                                holder.ivVoiceLeft.setImageResource(resId);
+                                            }
+                                        });
+                                        Thread.sleep(500);
+                                    }
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }.start();
+                    }
+                });
+
+            }
+
+            if (listener != null) {
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        int position = holder.getLayoutPosition();
+                        listener.onItemClick(holder.itemView, position);
                     }
                 });
             }
 
         }
-        holder.tvDate.setText(date);
-
-        if(listener != null){
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    int position = holder.getLayoutPosition();
-                    listener.onItemClick(holder.itemView,position);
-                }
-            });
-        }
-
     }
 
     @Override
@@ -236,6 +269,52 @@ public class RecycleViewAdapter_UserChat extends RecyclerView.Adapter<RecycleVie
         return datalist.size();
     }
 
+   /* private Handler handler = new Handler(context.getMainLooper()){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            int resId = context.getResources().getIdentifier("v_anim" + count,"drawable",context.getPackageName());
+            count++;
+            if(count == 4){
+                count = 1;
+            }
+
+            if(message.arg1 == MYPLAYING){
+
+                }else if(message.arg1 == FRIENDPLAYING){
+
+                }else {
+
+                }
+
+        }
+    };*/
+
+    public void playMyVoice(String voicePath, final ImageView imageView){
+        MediaPlayManager.play
+                (context.getApplicationContext().getFilesDir().getPath()+ "/" + voicePath,new MediaPlayer.OnCompletionListener(){
+
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        MyIsStart = false;
+                        count = 1;
+                        imageView.setImageResource(R.drawable.voice);
+                    }
+                });
+    }
+
+    public void playFriendVoice(String voicePath, final ImageView imageView){
+        MediaPlayManager.play
+                (context.getApplicationContext().getFilesDir().getPath()+ "/" + voicePath,new MediaPlayer.OnCompletionListener(){
+
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        FriendIsStart = false;
+                        count = 1;
+                        imageView.setImageResource(R.drawable.voice);
+                    }
+                });
+    }
 
     /**
      *获取语音消息的时长

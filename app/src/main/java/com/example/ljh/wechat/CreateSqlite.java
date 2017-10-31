@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.util.Log;
 
 /**
@@ -23,7 +24,7 @@ public class CreateSqlite extends AppCompatActivity{
         /*sqLiteDatabase.execSQL("CREATE TABLE user_head (_id INTEGER PRIMARY KEY AUTOINCREMENT,"
         + "username VARCHAR, head BLOB )");*/
 
-        sqLiteDatabase.execSQL("DROP TABLE chat_log");
+        //sqLiteDatabase.execSQL("DROP TABLE chat_log");
 
        /* sqLiteDatabase.execSQL("CREATE TABLE chat_log (_id INTEGER PRIMARY KEY AUTOINCREMENT,"
         + "fromUser VARCHAR,toUser VARCHAR,text VARCHAR,image BLOB,date VARCHAR,voicePath VARCHAR)");*/
@@ -36,4 +37,5 @@ public class CreateSqlite extends AppCompatActivity{
 
         sqLiteDatabase.close();
     }
+
 }

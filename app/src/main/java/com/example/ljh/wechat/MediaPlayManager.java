@@ -2,8 +2,11 @@ package com.example.ljh.wechat;
 
 import android.content.Context;
 import android.media.AudioManager;
+import android.media.Image;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Handler;
+import android.widget.ImageView;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -27,7 +30,7 @@ public class MediaPlayManager {
         void onError(String url);
     }
 
-        public static void play(String filePath, Context context) {
+        public static void play(String filePath, MediaPlayer.OnCompletionListener onCompletionListener) {
             if (mediaPlayer == null) {
                 mediaPlayer = new MediaPlayer();
                 mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
@@ -46,7 +49,7 @@ public class MediaPlayManager {
                 FileInputStream fileInputStream = new FileInputStream(file);
                 FileDescriptor fileDescriptor = fileInputStream.getFD();
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                //mediaPlayer.setOnCompletionListener(onCompletionListener);
+                mediaPlayer.setOnCompletionListener(onCompletionListener);
                 mediaPlayer.setDataSource(fileDescriptor);
                 mediaPlayer.prepare();
                 mediaPlayer.start();
@@ -56,10 +59,16 @@ public class MediaPlayManager {
             }
         }
 
-        public static void pause() {
+        public static void pause(final ImageView imageView, Handler handler) {
             if (isStart) {
                 mediaPlayer.stop();
                 isStart = false;
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        imageView.setImageResource(R.drawable.voice);
+                    }
+                });
             }
         }
 

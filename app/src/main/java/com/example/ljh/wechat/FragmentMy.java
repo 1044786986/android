@@ -54,7 +54,7 @@ public class FragmentMy extends Fragment implements View.OnClickListener{
     private static Bitmap bitmap;  //当前用户头像
     private LinearLayout linearLayout_KaoShiApp;    //跳转app
 
-    private  SQLiteDatabase sqLiteDatabase;
+    private static SQLiteDatabase sqLiteDatabase;
 
     private Handler handler = new Handler();
 
@@ -103,8 +103,8 @@ public class FragmentMy extends Fragment implements View.OnClickListener{
 
     public Bitmap getHead(){
         Bitmap bitmap = null;
-        //sqLiteDatabase = LoginActivity.databaseHelper.getReadableDatabase();
-        sqLiteDatabase = getActivity().openOrCreateDatabase("ljh.db",0,null);
+        sqLiteDatabase = LoginActivity.databaseHelper.getReadableDatabase();
+        //sqLiteDatabase = getActivity().openOrCreateDatabase("ljh.db",0,null);
         Cursor cursor = sqLiteDatabase.query("user_head",new String[]{"username","head"},"username=?",new String[]{MainActivity.username},null,null,null);
         if(cursor != null){
             while (cursor.moveToNext()){
@@ -135,7 +135,7 @@ public class FragmentMy extends Fragment implements View.OnClickListener{
                         .build();
                 final Request request = new Request.Builder()
                         .post(requestBody)
-                        .url("http://192.168.191.1:8080/wechat/SearchMyHeadServlet")
+                        .url(MainActivity.SearchMyHead)
                         .build();
                 okHttpClient.newCall(request).enqueue(new Callback() {
                     @Override
@@ -181,13 +181,13 @@ public class FragmentMy extends Fragment implements View.OnClickListener{
     public void insertMyHeadToSqlite(String myName,byte head[]){
         sqLiteDatabase = getActivity().openOrCreateDatabase("ljh.db",0,null);
         ContentValues contentValues = new ContentValues();
-        contentValues.put("username",MainActivity.username);
+        contentValues.put("username",myName);
         contentValues.put("head",head);
         sqLiteDatabase.insert("user_head",null,contentValues);
         sqLiteDatabase.close();
     }
 
-    public Bitmap getMyHead(){
+    public static Bitmap getMyHead(){
         return bitmap;
     }
 

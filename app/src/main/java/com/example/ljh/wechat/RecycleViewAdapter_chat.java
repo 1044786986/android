@@ -70,9 +70,13 @@ public class RecycleViewAdapter_chat extends RecyclerView.Adapter<RecycleViewAda
              * 判断最后一条记录是否为图片,如果是则显示“图片”
              */
             byte head[] = list.get(len - 1).getImage();
+            String path = list.get(len - 1).getVoicePath();
             if (head != null) {
                 holder.chatLog.setText("图片");
-            } else {
+            }else if(path != null){
+                holder.chatLog.setText("语音消息");
+            }
+            else {
                 holder.chatLog.setText(list.get(len - 1).getText());
             }
             /**

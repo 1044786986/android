@@ -6,15 +6,15 @@
     android:clickable="true">
 
     <RelativeLayout
-        android:background="#4b4c4f"
+        android:background="@color/TitleBarBgColor"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         android:layout_width="match_parent"
         android:layout_height="50dp">
     <TextView
         android:text="聊天"
-        android:textColor="#fff"
-        android:textSize="25dp"
+        android:textColor="@color/TitleBarTextColor"
+        android:textSize="20dp"
         android:layout_centerInParent="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

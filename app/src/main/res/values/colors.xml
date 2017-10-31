@@ -3,8 +3,12 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="TitleBarBgColor">#272727</color>
+    <color name="TitleBarBgColor">#4b4c4f</color>
     <color name="TitleBarTextColor">#fff</color>
     <color name="VoicingBgColor">#767676</color>
     <color name="SpaceBgColor">#E7E6E5</color>
+    <color name="Line">#272727</color>
+    <color name="ButtonBackground">#C7C6C6</color>
+    <color name="layout_all_NormalBackground">#EEEDED</color>
+    <color name="layout_all_SelectBackground">#E0DDDD</color>
 </resources>

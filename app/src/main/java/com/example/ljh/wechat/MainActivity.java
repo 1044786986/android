@@ -40,25 +40,34 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     static String username;
     static String toUser;
     static int ChatCount = 0;
-    static MainActivity mainActivity;
+    private static boolean isFirstPlay = true;
 
     private Handler handler = new Handler();
 
     static FragmentAddress fragmentAddress;
+    static MainActivity Instance;
+
+    static final String Ip = "192.168.191.1";
+    static final String SearchMyHead = "http://192.168.191.1:8080/wechat/SearchMyHeadServlet";
+    static final String  SearchFriendsServlet = "http://192.168.191.1:8080/wechat/SearchFriendsServlet";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mainActivity = new MainActivity();
+        startActivity();
+    }
+
+    private void startActivity(){
+        Instance = this;
         getUserName();
         initView();
         selected(4);
         selected(3);
         selected(2);
-
         fragmentAddress = new FragmentAddress();
     }
+
 
     @Override
     public void onClick(View view) {
@@ -210,9 +219,45 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(isFirstPlay == false){
+            /**
+             * 清除通知
+             */
+            for(int i =0;i<NotificationManager1.IdList.size();i++) {
+                NotificationManager1.notificationManager.cancel(NotificationManager1.IdList.get(i));
+            }
+            /**
+             * 更新聊天列表
+             */
+            FragmentChat.updateAdapter();
+            Log.i("tag","-----------------onStart");
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        /*if(isFirstPlay == false){
+        /**
+         * 清除通知
+
+        for(int i =0;i<NotificationManager1.IdList.size();i++) {
+            NotificationManager1.notificationManager.cancel(NotificationManager1.IdList.get(i));
+        }
+        /**
+         * 更新聊天列表
+
+            /*FragmentChat.updateAdapter();
+            Log.i("tag","-----------------onResume");
+        }*/
+        isFirstPlay = false;
+    }
+
 
     public void initView(){
-
         ib_tab_chat = (ImageButton) findViewById(R.id.ib_tab_chat);
         ib_tab_address = (ImageButton) findViewById(R.id.ib_tab_address);
         ib_tab_share = (ImageButton) findViewById(R.id.ib_tab_share);

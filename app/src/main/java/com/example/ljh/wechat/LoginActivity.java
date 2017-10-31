@@ -186,14 +186,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     /**
                      * 向服务器发送数据
                      */
-                    socket = new Socket("192.168.191.1",8888);
+                    socket = new Socket(MainActivity.Ip,8888);
                     OutputStream outputStream = socket.getOutputStream();
                     OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream,"UTF-8");
                     PrintWriter printWriter = new PrintWriter(outputStreamWriter);
                     Map<String,String> map = new HashMap<String, String>();
                     map.put("type","login");
                     map.put("username",username);
-                    map.put("password",password);
+                    map.put("password",EncodeManager.ShaEncode(password));
                     printWriter.print(new JSONObject(map));
                     printWriter.flush();
                     socket.shutdownOutput();
@@ -239,9 +239,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                             if(UserChatActivity.UserChat_State != 1){
                                 MainActivity.ChatCount++;//未读消息总数
-                                MainActivity.vibrator.vibrate(500);
+                                //MainActivity.vibrator.vibrate(500);
                                 FragmentChat.updateAdapter();
                             }
+                            NotificationManager1.sendNotification(fromUser,messageString,MainActivity.Instance,MainActivity.ChatCount);
                             message.obj = jsonObject;
                             message.sendToTarget();
                         }
@@ -260,10 +261,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 MainActivity.ChatCount++;//未读消息总数
                                 MainActivity.vibrator.vibrate(500);
                                 FragmentChat.updateAdapter();
+
                                 }
 
                             message.obj = jsonObject;
                             message.sendToTarget();
+                            NotificationManager1.sendNotification(fromUser,"图片",LoginActivity.this,1);
                         }
                         else if(type.equals("sendVoiceMessage")){
                             String fromUser = jsonObject.getString("fromUser");
@@ -295,6 +298,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 MainActivity.vibrator.vibrate(500);
                                 FragmentChat.updateAdapter();
                             }
+                            NotificationManager1.sendNotification(fromUser,"语音消息",LoginActivity.this,1);
                         }
                     }
                 } catch (IOException e) {
@@ -318,7 +322,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     String result = jsonObject.getString("result");
                     if (result.equals("true")) {
                         AddSharedPreferences();
-                        progressDialog.hide();
+                        progressDialog.dismiss();
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         intent.putExtra("username", username);
                         startActivity(intent);
@@ -382,6 +386,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setIcon(R.mipmap.ic_launcher);
         builder.setMessage("请输入用户名");
+
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:background="@color/TitleBarBgColor"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+        <RelativeLayout
+            android:id="@+id/layout_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        <TextView
+            android:text="返回"
+            android:textSize="20dp"
+            android:textColor="@color/TitleBarTextColor"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="18dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:src="@mipmap/ic_chevron_left_white_24dp" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:text="发表主题"
+            android:textColor="@color/TitleBarTextColor"
+            android:textSize="21dp"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tvSendPost"
+            android:text="发出"
+            android:textSize="20dp"
+            android:textColor="@color/TitleBarTextColor"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <TextView
+            android:text="请选择语言类型:"
+            android:textSize="17dp"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp" />
+
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/spinner_type"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"/>
+
+</LinearLayout>
+
+        <LinearLayout
+            android:background="@color/Line"
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"></LinearLayout>
+        <EditText
+            android:id="@+id/etTitle"
+            android:hint="标题"
+            android:maxLines="1"
+            android:maxLength="30"
+            android:inputType="textLongMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/etContent"
+            android:hint="内容"
+            android:gravity="start"
+            android:maxLength="500"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:src="@mipmap/ic_add_black_24dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/layout_addImage"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <LinearLayout
+        android:id="@+id/layout_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <ImageView
+            android:visibility="gone"
+        android:src="@mipmap/ic_launcher"
+        android:layout_width="80dp"
+        android:layout_height="80dp" />
+        <ImageView
+            android:visibility="gone"
+            android:src="@mipmap/ic_launcher"
+            android:layout_width="80dp"
+            android:layout_height="80dp" />
+        <ImageView
+            android:visibility="gone"
+            android:src="@mipmap/ic_launcher"
+            android:layout_width="80dp"
+            android:layout_height="80dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:id="@+id/layout_camera"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/ivAlbum"
+            android:src="@drawable/album"
+            android:layout_width="80dp"
+            android:layout_height="50dp" />
+
+            <ImageView
+                android:id="@+id/ivCamera"
+                android:src="@drawable/camera"
+                android:layout_width="80dp"
+                android:layout_height="50dp" />
+    </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

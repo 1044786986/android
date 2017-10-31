@@ -7,14 +7,14 @@
 
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="#4b4c4f">
+        android:background="@color/TitleBarBgColor">
 
         <TextView
             android:id="@+id/tvCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="取消"
-            android:textColor="#fff"
+            android:textColor="@color/TitleBarTextColor"
             android:textSize="20dp"
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
@@ -30,7 +30,7 @@
             android:layout_alignParentRight="true"
             android:layout_marginRight="10dp"
             android:layout_alignTop="@+id/tvCancel"
-            android:textColor="#fff"
+            android:textColor="@color/TitleBarTextColor"
             android:textSize="20dp"
             android:text="发送" />
 
@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_alignTop="@+id/tvCancel"
             android:layout_centerHorizontal="true"
-            android:textColor="#fff"
+            android:textColor="@color/TitleBarTextColor"
             android:textSize="25dp"
             android:text="朋友验证" />
     </RelativeLayout>

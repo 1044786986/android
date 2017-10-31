@@ -69,7 +69,7 @@ public class FragmentAddress extends Fragment implements View.OnClickListener{
 
         private static List<AddressBean> datalist;
         private String username = null;
-        private String url = "http://192.168.191.1:8080/wechat/SearchFriendsServlet";
+        private String url = MainActivity.SearchFriendsServlet;
 
         private static RecycleViewAdapter_address recycleViewAdapter_address;
 
@@ -186,7 +186,7 @@ public class FragmentAddress extends Fragment implements View.OnClickListener{
         datalist.add(new AddressBean(username,bitmap));
     }
 
-    public void updataRecycleView(){
+    public  void updataRecycleView(){
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -196,7 +196,7 @@ public class FragmentAddress extends Fragment implements View.OnClickListener{
         });
     }
 
-    public Bitmap getFriendHead(String friend){
+    public static Bitmap getFriendHead(String friend){
         int i;
         Bitmap bitmap = null;
         for(i = 0;i<datalist.size();i++){
@@ -206,8 +206,20 @@ public class FragmentAddress extends Fragment implements View.OnClickListener{
         }
         if(i != datalist.size()){
            bitmap = datalist.get(i).getBitmap();
+        }else{
+
         }
         return  bitmap;
+    }
+
+    public void removeDatalist(String toUser){
+        int i =0;
+        for(i = 0; i<datalist.size();i++){
+            if(datalist.get(i).getName().equals(toUser)){
+                break;
+            }
+        }
+        datalist.remove(i);
     }
 
     public void ShowRemind(int i){

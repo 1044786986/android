@@ -6,7 +6,7 @@
     android:clickable="true">
 
     <LinearLayout
-        android:background="#4b4c4f"
+        android:background="@color/TitleBarBgColor"
         android:layout_width="match_parent"
         android:layout_height="50dp">
 
@@ -14,7 +14,7 @@
             android:id="@+id/tvBack"
             android:text="返回"
             android:textSize="20dp"
-            android:textColor="#fff"
+            android:textColor="@color/TitleBarTextColor"
             android:layout_marginLeft="10dp"
             android:layout_gravity="center_vertical"
             android:layout_width="wrap_content"
@@ -22,7 +22,7 @@
 
         <TextView
             android:text="搜索好友"
-            android:textColor="#fff"
+            android:textColor="@color/TitleBarTextColor"
             android:textSize="25dp"
             android:layout_marginLeft="80dp"
             android:layout_gravity="center_vertical"

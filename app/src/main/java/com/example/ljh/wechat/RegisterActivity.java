@@ -94,7 +94,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
                 RequestBody requestBody = new FormBody.Builder()
                         .add("username",username)
-                        .add("password",password)
+                        .add("password",EncodeManager.ShaEncode(password))  //对密码进行加密
                         .add("email",email)
                         .build();
 
