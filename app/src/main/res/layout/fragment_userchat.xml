@@ -7,43 +7,49 @@
     android:id="@+id/linearLayout_UserChat">
 
     <RelativeLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@color/TitleBarBgColor"
         android:paddingBottom="10dp"
         android:paddingTop="10dp">
 
-        <TextView
-            android:id="@id/tvUserName"
+        <ImageView
+            android:id="@+id/imageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:src="@mipmap/ic_chevron_left_white_24dp" />
+
+        <TextView
+            android:id="@+id/tvBack"
+            android:layout_toEndOf="@id/imageView"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/back"
+            android:textColor="@color/TitleBarTextColor"
+            android:textSize="20dp" />
+
+        <TextView
+            android:id="@id/tvUserName"
             android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:text="用户名"
             android:textColor="#fff"
             android:textSize="20dp" />
 
-        <TextView
-            android:id="@+id/tvBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/ivMessage"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginLeft="10dp"
-            android:layout_marginStart="15dp"
-            android:text="返回"
-            android:textColor="@color/TitleBarTextColor"
-            android:textSize="20dp" />
 
         <ImageView
             android:id="@+id/ivMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginEnd="18dp"
-            android:layout_marginRight="18dp"
+            android:layout_marginRight="5dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:scaleType="fitXY"
             android:src="@mipmap/ic_person_white_24dp" />
 
         <TextView
@@ -56,11 +62,6 @@
             android:textColor="#fff"
             android:textSize="20dp" />
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:src="@mipmap/ic_chevron_left_white_24dp" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -86,31 +87,25 @@
         android:layout_width="match_parent"
         android:layout_height="1px"></LinearLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/ivVoice"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
+            android:layout_gravity="center"
             android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
             android:src="@drawable/search_ic_mic_black_24dp" />
 
-        <ImageView
-            android:id="@+id/ivSendImage"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignTop="@+id/ivVoice"
-            android:layout_marginEnd="10dp"
-            android:layout_marginRight="10dp"
-            android:src="@mipmap/ic_add_black_24dp" />
+    <RelativeLayout
+        android:gravity="center"
+        android:padding="5dp"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content">
 
         <Button
             android:text="按住说话"
@@ -119,24 +114,30 @@
             android:ems="18"
             android:layout_height="40dp"
             android:visibility="gone"
-            android:layout_alignTop="@+id/ivVoice"
-            android:layout_toRightOf="@+id/ivVoice" />
-
+             />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
         <EditText
             android:id="@+id/etMessage"
-            android:background="@drawable/bg_editview"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:ems="14"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxHeight="100dp"
             android:clickable="true"
             android:imeOptions="actionSend"
             android:inputType="textLongMessage"
-            android:maxLines="5"
-            android:layout_alignTop="@+id/ivVoice"
-            android:layout_toRightOf="@+id/ivVoice" />
-
-
+            />
+    </LinearLayout>
     </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/ivSendImage"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:src="@mipmap/ic_add_black_24dp" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout_SendImage"

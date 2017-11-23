@@ -34,8 +34,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import cn.finalteam.galleryfinal.CoreConfig;
+import cn.finalteam.galleryfinal.FunctionConfig;
+import cn.finalteam.galleryfinal.GalleryFinal;
+import cn.finalteam.galleryfinal.ImageLoader;
+import cn.finalteam.galleryfinal.ThemeConfig;
+import cn.finalteam.galleryfinal.model.PhotoInfo;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -53,19 +60,20 @@ public class ModifyHeadActivity extends AppCompatActivity {
 
     private Intent intent;
     private Uri uri;
-    static final int TAKE_PHOTO = 1;
-    static final int CHOOSE_PHOTO = 2;
+    static final int TAKE_PHOTO = 1;    //照相
+    static final int CHOOSE_PHOTO = 2;  //选择照片
 
     private SQLiteDatabase sqLiteDatabase;
-    private String url = "http://192.168.191.1:8080/wechat/SearchFriendsServlet";
 
-    private FragmentMy fragmentMy;
+    private static FragmentMy fragmentMy;
+    private CompressImageManager compressImageManager;
     private Handler handler = new Handler();
     @Override
     protected void onCreate( Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modifyhead);
         initView();
+        compressImageManager = new CompressImageManager();
         fragmentMy = new FragmentMy();
     }
 
@@ -113,10 +121,31 @@ public class ModifyHeadActivity extends AppCompatActivity {
      * 打开相册
      */
     public void openAlbum(){
-        Intent intent = new Intent("android.intent.action.GET_CONTENT");
+        /*Intent intent = new Intent("android.intent.action.GET_CONTENT");
         intent.setType("image/*");
-        startActivityForResult(intent,CHOOSE_PHOTO);
+        startActivityForResult(intent,CHOOSE_PHOTO);*/
+        ThemeConfig themeConfig = ThemeConfig.DARK;
+        FunctionConfig functionConfig = new FunctionConfig.Builder()
+                .setMutiSelectMaxSize(1)
+                .setEnableRotate(true).build();
+        ImageLoader imageLoader = new ImageLoade();
+        CoreConfig coreConfig = new CoreConfig.Builder(this,imageLoader,themeConfig)
+                .setFunctionConfig(functionConfig).build();
+        GalleryFinal.init(coreConfig);
+        GalleryFinal.openGallerySingle(1,functionConfig,handlerResultCallback);
     }
+
+    GalleryFinal.OnHandlerResultCallback handlerResultCallback = new GalleryFinal.OnHandlerResultCallback() {
+        @Override
+        public void onHandlerSuccess(int requestCode, List<PhotoInfo> resultList) {
+                showImage(resultList.get(0).getPhotoPath());
+        }
+
+        @Override
+        public void onHandlerFailure(int requestCode, String errorMsg) {
+
+        }
+    };
 
     /**
      *拍照
@@ -143,28 +172,27 @@ public class ModifyHeadActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 随机生成文件名
+     */
+    /*public String getName(){
+    }*/
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode){
             case TAKE_PHOTO:    //拍照
                 if(resultCode == RESULT_OK){
-                    try {
-                        Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
-                        bitmap = compressImage(bitmap);
+                        Bitmap bitmap = compressImageManager.CompressToCamera(this,uri);
                         ivHead.setImageBitmap(bitmap);
                         insertToSqlite(image(bitmap));  //保存到sqlite数据库
                         insertToOracle(image(bitmap));  //保存到服务器数据库
-
-                        fragmentMy.updateHead();
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
+                       fragmentMy.updateHead();
                 }
                 break;
             case CHOOSE_PHOTO:  //在相册中选择
                 if(resultCode == RESULT_OK){
                     handleImage(data);
-                    fragmentMy.updateHead();
                 }
                 break;
             default:
@@ -215,6 +243,8 @@ public class ModifyHeadActivity extends AppCompatActivity {
                 imagePath = uri.getPath();
             }
             showImage(imagePath);//显示图片
+        }else {
+            String a = "1";
         }
     }
 
@@ -237,17 +267,20 @@ public class ModifyHeadActivity extends AppCompatActivity {
     /**
      *  显示图片
      */
-    public void showImage(String imagePath){
-        if(imagePath != null){
-            Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
-            bitmap = compressImage(bitmap);
+    public void showImage(String photoInfo){
+        if(photoInfo != null){
+            //Bitmap bitmap = BitmapFactory.decodeFile(photoInfo);
+            Bitmap bitmap = compressImageManager.CompressToAlbum(photoInfo);
             ivHead.setImageBitmap(bitmap);
             insertToSqlite(image(bitmap));  //保存到sqlite数据库
             insertToOracle(image(bitmap));  //保存到服务器数据库
+            fragmentMy.updateHead();
         }else {
             Toast.makeText(ModifyHeadActivity.this,"failed to get image",Toast.LENGTH_SHORT).show();
         }
     }
+
+
 
     public void insertToSqlite(byte[] image){
         sqLiteDatabase = openOrCreateDatabase("ljh.db",0,null);
@@ -283,7 +316,7 @@ public class ModifyHeadActivity extends AppCompatActivity {
                         .build();
                 Request request = new Request.Builder()
                         .post(requestBody)
-                        .url(url)
+                        .url(MainActivity.SearchFriendsServlet)
                         .build();
 
                 okHttpClient.newCall(request).enqueue(new Callback() {
@@ -294,20 +327,13 @@ public class ModifyHeadActivity extends AppCompatActivity {
 
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
-                        Log.i("tag","-------------------更换头像成功");
+                        Log.i("aa","-------------------更换头像成功");
 
                     }
                 });
             }
         }.start();
 
-  }
-
-  public Bitmap compressImage(Bitmap bitmap){
-      Matrix matrix = new Matrix();
-      matrix.setScale(0.1f,0.1f);
-      bitmap = Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);
-      return bitmap;
   }
 
     /**
@@ -321,7 +347,7 @@ public class ModifyHeadActivity extends AppCompatActivity {
 
     public void initView(){
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setLogo(R.drawable.chat_normal);
+        actionBar.setLogo(R.drawable.ic_chat_bubble_outline_blue_24dp);
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("");
         actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this,R.drawable.actionbar_head));
@@ -334,9 +360,14 @@ public class ModifyHeadActivity extends AppCompatActivity {
             if (bitmap != null) {
                 ivHead.setImageBitmap(bitmap);
             } else {
-                ivHead.setImageResource(R.drawable.address_normal);
+                ivHead.setImageResource(R.mipmap.ic_person_black_24dp);
             }
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        System.gc();
+    }
 }

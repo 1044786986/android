@@ -14,15 +14,16 @@
         android:layout_marginTop="5dp"
         android:layout_marginLeft="10dp"
         android:src="@mipmap/ic_launcher"
-        android:layout_width="50dp"
-        android:layout_height="50dp" />
+        android:scaleType="fitXY"
+        android:layout_width="40dp"
+        android:layout_height="40dp" />
 
     <TextView
         android:id="@+id/tvName"
         android:text="username"
         android:textSize="20dp"
-        android:layout_marginTop="20dp"
         android:layout_marginLeft="10dp"
+        android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

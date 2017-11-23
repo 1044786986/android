@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/DrawerLayout"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -24,7 +25,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
-                    android:text="社区"
+                    android:text="@string/community"
                     android:textColor="@color/TitleBarTextColor"
                     android:textSize="20dp" />
 
@@ -51,9 +52,11 @@
                     android:gravity="center">
 
                     <TextView
+                        android:id="@+id/tvAll"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="全部"
+                        android:text="@string/all"
+                        android:textColor="@color/TitleBarBgColor"
                         android:textSize="20dp" />
                 </LinearLayout>
 
@@ -66,31 +69,34 @@
                     android:gravity="center">
 
                     <TextView
+                        android:id="@+id/tvFriend"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="好友"
+                        android:text="@string/friend"
+                        android:textColor="@color/shareButtonText"
                         android:textSize="20dp" />
                 </LinearLayout>
             </LinearLayout>
 
-
-            <cn.finalteam.galleryfinal.widget.HorizontalListView
-                android:id="@+id/ListView_share"
+            <android.support.design.widget.TabLayout
+                android:id="@+id/TabLayout"
+                app:tabMode="scrollable"
+                app:tabSelectedTextColor="@color/TitleBarBgColor"
+                app:tabIndicatorColor="@color/TitleBarBgColor"
+                app:tabTextAppearance="@style/TabLayoutTextStyle"
                 android:layout_width="match_parent"
-                android:layout_height="40dp" />
+                android:layout_height="40dp"></android.support.design.widget.TabLayout>
 
+            <LinearLayout
+                android:background="@color/SpaceBgColor"
+                android:layout_width="match_parent"
+                android:layout_height="10dp"></LinearLayout>
 
-            <android.support.v4.widget.SwipeRefreshLayout
-                android:id="@+id/swipeRefreshLayout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/ViewPager"
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/recyclerView_share"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-
-            </android.support.v4.widget.SwipeRefreshLayout>
+                    android:layout_height="match_parent"/>
 
         </LinearLayout>
     </FrameLayout>
@@ -99,6 +105,9 @@
         android:id="@+id/navigation_view"
         app:menu="@menu/nav_menu"
         app:headerLayout="@layout/nav_header"
+        android:background="@drawable/blue"
+        app:itemTextColor="@color/nav_header_TextColor"
+        app:itemIconTint="#fff"
         android:layout_gravity="start"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

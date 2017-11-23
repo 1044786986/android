@@ -60,14 +60,14 @@ public class FragmentAddress extends Fragment implements View.OnClickListener{
         private ImageView ivAdd;    //增加好友
         private TextView tvFriendCount; //好友数量
         private LinearLayout linearLayout_newfriend;    //新的朋友
-        private LinearLayout fragment_address_layout;
+        private LinearLayout fragment_address_layout;   //整个LinearLayout
         static BadgeView badgeView; //消息红点提示
         private LinearLayoutManager linearLayoutManager;
 
         private OkHttpClient okHttpClient;
         private Handler handler = new Handler(Looper.getMainLooper());
 
-        private static List<AddressBean> datalist;
+        private static List<AddressBean> datalist;  //好友列表
         private String username = null;
         private String url = MainActivity.SearchFriendsServlet;
 
@@ -82,10 +82,12 @@ public class FragmentAddress extends Fragment implements View.OnClickListener{
 
             initView(view);
             getAddress();
-
-            return  view;
+            return view;
     }
 
+    /**
+     * 获取好友列表
+     */
     public void getAddress(){
         new Thread(){
             @Override
@@ -169,6 +171,9 @@ public class FragmentAddress extends Fragment implements View.OnClickListener{
         });
     }
 
+    /**
+     * 将最近聊天的好友保存到本地数据库
+     */
     public void insetrIntoSqlite(String friend){
         SQLiteDatabase sqLiteDatabase = getActivity().openOrCreateDatabase("ljh.db",0,null);
         Cursor cursor = sqLiteDatabase.query("recent_chat",new String[]{"my","friend"},"my=? and friend=?",
@@ -182,20 +187,30 @@ public class FragmentAddress extends Fragment implements View.OnClickListener{
         sqLiteDatabase.close();
     }
 
+    /**
+     * 增加好友
+     * @param username
+     * @param bitmap
+     */
     public void setDatalist(String username,Bitmap bitmap){
         datalist.add(new AddressBean(username,bitmap));
     }
 
-    public  void updataRecycleView(){
+    public void updataRecycleView(){
         handler.post(new Runnable() {
             @Override
             public void run() {
                 recycleViewAdapter_address.notifyDataSetChanged();
-                tvFriendCount.setText("总共有" + datalist.size() + "位好友");
+                //tvFriendCount.setText("总共有" + datalist.size() + "位好友");
             }
         });
     }
 
+    /**
+     * 获得好友头像
+     * @param friend
+     * @return
+     */
     public static Bitmap getFriendHead(String friend){
         int i;
         Bitmap bitmap = null;
@@ -212,6 +227,10 @@ public class FragmentAddress extends Fragment implements View.OnClickListener{
         return  bitmap;
     }
 
+    /**
+     * 删除好友
+     * @param toUser
+     */
     public void removeDatalist(String toUser){
         int i =0;
         for(i = 0; i<datalist.size();i++){

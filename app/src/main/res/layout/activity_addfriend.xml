@@ -12,7 +12,7 @@
 
         <TextView
             android:id="@+id/tvBack"
-            android:text="返回"
+            android:text="@string/back"
             android:textSize="20dp"
             android:textColor="@color/TitleBarTextColor"
             android:layout_marginLeft="10dp"
@@ -21,7 +21,7 @@
             android:layout_height="wrap_content" />
 
         <TextView
-            android:text="搜索好友"
+            android:text="@string/searchFriend"
             android:textColor="@color/TitleBarTextColor"
             android:textSize="25dp"
             android:layout_marginLeft="80dp"
@@ -31,7 +31,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:background="#2727"
+        android:background="@color/SpaceBgColor"
         android:layout_width="match_parent"
         android:layout_height="10dp"></LinearLayout>
 
@@ -43,7 +43,7 @@
 
     <LinearLayout
 
-        android:background="#2727"
+        android:background="@color/SpaceBgColor"
         android:layout_width="match_parent"
         android:layout_height="10dp"></LinearLayout>
 
@@ -70,19 +70,19 @@
             android:layout_height="50dp"
             android:paddingBottom="10dp"
             android:paddingTop="10dp"
-            android:src="@drawable/address_normal" />
+            android:src="@mipmap/ic_person_black_24dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingBottom="10dp"
             android:paddingTop="10dp"
-            android:text="手机通讯录"
+            android:text="@string/phoneAddress"
             android:textSize="25dp" />
     </LinearLayout>
 
     <LinearLayout
-        android:background="#2727"
+        android:background="@color/SpaceBgColor"
         android:layout_width="match_parent"
         android:layout_height="10dp"></LinearLayout>
 

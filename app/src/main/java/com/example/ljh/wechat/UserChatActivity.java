@@ -16,13 +16,14 @@ public class UserChatActivity extends FragmentActivity{
     Fragment fragment_userChat,FragmentUserInfo;
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
-    private static String toUser;
-    static int UserChat_State = 0;
+    static String toUser = "测试";
+    static int UserChat_State = 0;  //判断是否在此页面
 
     static  final int USERCHAT = 1;
     static final int USERINFO = 2;
 
     static UserChatActivity userChatActivity;
+    static FragmentChat fragmentChat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,15 +74,16 @@ public class UserChatActivity extends FragmentActivity{
     public void initView(){
         Intent intent = getIntent();
         toUser = intent.getStringExtra("toUser");
-
-
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         UserChat_State = 0;
-        //UserChatActivity.this.finish();
+        toUser = "测试";
+        userChatActivity = null;
+        UserChatActivity.this.finish();
+        fragmentChat.updateAdapter();
         Log.i("tag","-------------Activity is onDestroy");
 
     }

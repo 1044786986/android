@@ -6,16 +6,17 @@
     <LinearLayout
         android:background="#000"
         android:layout_width="match_parent"
-        android:layout_height="80dp"></LinearLayout>
+        android:layout_height="50dp"></LinearLayout>
 
     <ImageView
         android:id="@+id/ivHead"
+        android:scaleType="fitXY"
         android:src="@mipmap/ic_launcher"
         android:layout_width="match_parent"
-        android:layout_height="300dp" />
+        android:layout_height="450dp" />
 
     <LinearLayout
-        android:background="#000"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></LinearLayout>
+        android:layout_height="match_parent"
+        android:background="#000"></LinearLayout>
 </LinearLayout>

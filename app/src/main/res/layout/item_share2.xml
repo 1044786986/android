@@ -1,121 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
 
-    <ImageView
-        android:id="@+id/ivHead"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:src="@drawable/address_normal"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp" />
-
-    <TextView
-        android:id="@+id/tvUserName"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/ivHead"
-        android:layout_marginStart="10dp"
-        android:layout_toEndOf="@+id/ivHead"
-        android:text="shanshan" />
+        >
 
-    <TextView
-        android:id="@+id/tvDate"
-        android:layout_width="wrap_content"
+        <ImageView
+            android:id="@+id/ivHead"
+            android:scaleType="fitXY"
+            android:layout_marginLeft="10dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@mipmap/ic_person_black_24dp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvUserName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="珊珊"
+                android:textSize="15dp" />
+
+            <TextView
+                android:id="@+id/tvDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="5dp"
+                android:text="2017-01-01" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:gravity="right"
+            android:layout_marginRight="20dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:src="@mipmap/ic_textsms_black_24dp"
+                android:layout_marginTop="5dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp" />
+
+            <TextView
+                android:id="@+id/tvComment"
+                android:text="15"
+                android:layout_marginLeft="5dp"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="2017-01-01"
-        android:layout_alignBottom="@+id/ivHead"
-        android:layout_alignStart="@+id/tvUserName" />
+        android:layout_marginTop="5dp"
+        android:gravity="center">
 
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignTop="@+id/tvUserName"
-        android:layout_marginEnd="55dp"
-        android:src="@mipmap/ic_launcher"/>
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:maxLines="1"
+            android:maxWidth="250dp"
+            android:text="90旬老太竟然拿"
+            android:textSize="16dp" />
 
-    <TextView
-        android:id="@+id/tvComment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="15"
-        android:layout_above="@+id/tvDate"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="33dp" />
+        <LinearLayout
+            android:gravity="right"
+            android:layout_marginRight="20dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ic_favorite_border_black_24dp" />
 
-    <ImageView
-        android:id="@+id/imageView4"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:src="@mipmap/ic_launcher"
-        android:layout_below="@+id/tvDate"
-        android:layout_alignStart="@+id/imageView3" />
+            <TextView
+                android:id="@+id/tvNice"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="15" />
 
-    <TextView
-        android:id="@+id/tvNice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="15"
-        android:layout_marginTop="8dp"
-        android:layout_alignTop="@+id/imageView4"
-        android:layout_alignStart="@+id/tvComment" />
+        </LinearLayout>
 
-    <TextView
-        android:id="@+id/tvTitle"
-        android:textSize="17dp"
-        android:maxLines="1"
-        android:maxEms="12"
-        android:ems="12"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/imageView4"
-        android:layout_alignStart="@+id/ivHead"
-        android:layout_marginStart="10dp"
-        android:text="90后美女竟然" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tvContent"
-        android:ems="20"
-        android:maxLines="2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/tvTitle"
-        android:layout_below="@+id/tvTitle"
-        android:layout_marginTop="5dp"
-        android:text="90后美女竟然摸摸摸摸" />
-
-    <ImageView
-        android:id="@+id/ivContent1"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_alignStart="@+id/tvContent"
-        android:layout_below="@+id/tvContent"
-        android:layout_marginTop="5dp"
-        android:src="@mipmap/ic_launcher" />
-
-    <ImageView
-        android:id="@+id/ivContent2"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
         android:layout_marginLeft="15dp"
-        android:layout_alignBottom="@+id/ivContent1"
-        android:layout_toEndOf="@+id/ivContent1"
-        android:src="@mipmap/ic_launcher" />
+        android:text="90旬老太竟然拿护眼按摩仪"
+        android:maxLines="1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
-    <ImageView
-        android:id="@+id/ivContent3"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_alignBottom="@+id/ivContent2"
-        android:layout_marginStart="15dp"
-        android:layout_toEndOf="@+id/ivContent2"
-        android:src="@mipmap/ic_launcher"/>
+   <cn.finalteam.galleryfinal.widget.HorizontalListView
+       android:id="@+id/horizontalListView"
+       android:layout_width="match_parent"
+       android:layout_height="60dp"></cn.finalteam.galleryfinal.widget.HorizontalListView>
 
-</RelativeLayout>
+    <LinearLayout
+        android:background="@color/Line"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"></LinearLayout>
+
+</LinearLayout>

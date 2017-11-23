@@ -11,7 +11,7 @@
         android:layout_height="50dp">
 
         <TextView
-            android:text="返回"
+            android:text="@string/back"
             android:textColor="@color/TitleBarTextColor"
             android:textSize="18dp"
             android:layout_marginLeft="5dp"
@@ -19,7 +19,7 @@
             android:layout_height="wrap_content" />
 
         <TextView
-            android:text="信息"
+            android:text="@string/information"
             android:textColor="@color/TitleBarTextColor"
             android:textSize="20dp"
             android:layout_centerInParent="true"
@@ -41,6 +41,8 @@
 
     <ImageView
         android:id="@+id/ivHead"
+        android:scaleType="fitXY"
+        android:background="@color/headBackground"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:src="@mipmap/ic_person_black_24dp"
@@ -71,7 +73,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="联系电话:"
+            android:text="@string/phone"
             android:textSize="18dp" />
 
         <TextView
@@ -94,7 +96,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
-            android:text="个性签名:"
+            android:text="@string/slogan"
             android:textSize="18dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -120,7 +122,7 @@
         android:layout_height="wrap_content">
         <TextView
             android:id="@+id/tvArticle"
-            android:text="TA的文章"
+            android:text="@string/hePost"
             android:textSize="18dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -133,7 +135,7 @@
 
     <Button
         android:id="@+id/btSendMessage"
-        android:text="发送消息"
+        android:text="@string/sendMessage"
         android:textSize="15dp"
         android:ems="18"
         android:background="@drawable/bt_sendmessage"
@@ -144,7 +146,7 @@
 
     <Button
         android:id="@+id/btDeleteFriend"
-        android:text="删除好友"
+        android:text="@string/deleteFriend"
         android:textSize="15dp"
         android:background="@drawable/bt_delete"
         android:ems="18"

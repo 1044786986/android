@@ -4,11 +4,11 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="150dp"
     android:gravity="center"
-    android:background="@color/TitleBarBgColor">
+    >
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ccivHead"
-        android:src="@mipmap/ic_launcher"
+        android:src="@mipmap/ic_account_circle_white_18dp"
         android:layout_width="70dp"
         android:layout_height="70dp" />
 
@@ -16,8 +16,15 @@
         android:id="@+id/tvUserName"
         android:text="珊珊"
         android:textSize="20dp"
+        android:textColor="@color/nav_header_TextColor"
         android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_marginTop="5dp"
+        android:background="@color/nat_LineColor"
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"></LinearLayout>
 
 </LinearLayout>

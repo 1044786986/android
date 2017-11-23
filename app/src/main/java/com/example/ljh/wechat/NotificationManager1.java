@@ -29,25 +29,27 @@ public class NotificationManager1 {
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         builder = new NotificationCompat.Builder(context);
-        builder.setSmallIcon(R.drawable.chat_selected);
+        builder.setSmallIcon(R.drawable.ic_chat_bubble_outline_blue_24dp);
         builder.setContentTitle(fromUser);
         builder.setContentText(content);
         builder.setContentIntent(pendingIntent);
-        //builder.setAutoCancel(true);
+        builder.setAutoCancel(true);
         //builder.setFullScreenIntent(pendingIntent,false);
         builder.setDeleteIntent(pendingIntent);
         /**
          * 开启声音提醒后
          */
-        builder.setDefaults(Notification.DEFAULT_SOUND);
+        if(MessageRemindActivity.voice){
+            builder.setDefaults(Notification.DEFAULT_SOUND);
+        }
         /**
          * 开启震动提醒后
          */
-        builder.setDefaults(Notification.DEFAULT_VIBRATE);
+        if(MessageRemindActivity.shock){
+            builder.setDefaults(Notification.DEFAULT_VIBRATE);
+        }
 
         //NotificationCompat notificationCompat = new NotificationCompat();
-
-
         notificationManager.notify(id,builder.build());
         IdList.add(id);
     }

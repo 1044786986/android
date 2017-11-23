@@ -57,6 +57,7 @@ public class ListViewAdapter_Add extends BaseAdapter{
             viewHolder.textView = (TextView) view.findViewById(R.id.tvUserName);
             viewHolder.button = (Button) view.findViewById(R.id.btAdd);
             if(friend.equals("false")) {
+                viewHolder.button.setText("添加好友");
                 viewHolder.button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -70,7 +71,9 @@ public class ListViewAdapter_Add extends BaseAdapter{
                 viewHolder.button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
+                        Intent intent = new Intent(context,UserChatActivity.class);
+                        intent.putExtra("toUser",datalist.get(i).getName());
+                        context.startActivity(intent);
                     }
                 });
             }
@@ -88,7 +91,7 @@ public class ListViewAdapter_Add extends BaseAdapter{
                 if(datalist.get(i).getBitmap() != null){
                     viewHolder.imageView.setImageBitmap(datalist.get(i).getBitmap());   //显示头像
                 }else {
-                    viewHolder.imageView.setImageResource(R.drawable.address_normal);   //如果没有头像
+                    viewHolder.imageView.setImageResource(R.mipmap.ic_person_black_24dp);   //如果没有头像
                 }
             }
         return view;

@@ -1,6 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/linearLayout_community">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/TitleBarBgColor"
+        android:id="@+id/relativeLayout">
+
+        <TextView
+            android:id="@+id/tvBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/back"
+            android:textColor="@color/TitleBarTextColor"
+            android:textSize="20dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="10dp"/>
+    </RelativeLayout>
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/relativeLayout"
+    android:layout_alignParentStart="true"
+    android:layout_above="@+id/linearLayout">
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView_community"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"></android.support.v7.widget.RecyclerView>
 </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_gravity="center"
+            android:src="@drawable/ic_mood_black_24dp"
+            android:layout_marginLeft="5dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp" />
+
+        <EditText
+            android:id="@+id/etMessage"
+            android:hint="@string/saySth"
+            android:inputType="textLongMessage"
+            android:imeOptions="actionSend"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:maxHeight="100dp"
+            />
+        <ImageView
+            android:id="@+id/ivAddImage"
+            android:src="@mipmap/ic_add_black_24dp"
+            android:layout_gravity="center"
+            android:layout_width="40dp"
+            android:layout_height="40dp" />
+        <Button
+            android:id="@+id/btSend"
+            android:text="@string/send"
+            android:visibility="gone"
+            android:background="@color/TitleBarBgColor"
+            android:layout_width="60dp"
+            android:layout_height="40dp" />
+    </LinearLayout>
+        <LinearLayout
+            android:id="@+id/layout_addImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/ivAlbum"
+                android:visibility="gone"
+                android:src="@drawable/album"
+                android:layout_margin="10dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp" />
+
+            <ImageView
+                android:id="@+id/ivCamera"
+                android:visibility="gone"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/camera"/>
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:visibility="gone"
+                android:src="@mipmap/ic_launcher"
+                android:scaleType="fitXY"
+                android:layout_marginLeft="10dp"
+                android:layout_width="100dp"
+                android:layout_height="140dp" />
+
+            <ImageView
+                android:id="@+id/ivDelete"
+                android:visibility="gone"
+                android:src="@mipmap/ic_cancel_black_24dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

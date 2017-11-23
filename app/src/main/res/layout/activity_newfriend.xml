@@ -15,7 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="新的朋友"
+            android:text="@string/newFriend"
             android:textColor="@color/TitleBarTextColor"
             android:textSize="25dp" />
 
@@ -25,14 +25,14 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_centerVertical="true"
-            android:text="返回"
+            android:text="@string/back"
             android:textSize="20dp"
             android:textColor="@color/TitleBarTextColor"/>
 
     </RelativeLayout>
 
     <LinearLayout
-        android:background="#2727"
+        android:background="@color/SpaceBgColor"
         android:layout_width="match_parent"
         android:layout_height="10dp"></LinearLayout>
 

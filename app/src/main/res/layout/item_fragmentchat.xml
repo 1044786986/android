@@ -7,6 +7,7 @@
     android:layout_height="wrap_content">
 
     <ImageView
+        android:src="@mipmap/ic_launcher"
         android:id="@+id/ivHead"
         app:layout_editor_absoluteX="10dp"
         app:layout_editor_absoluteY="5dp"
@@ -16,9 +17,9 @@
         tools:layout_editor_absoluteX="10dp" />
 
     <TextView
+        android:text="aaa"
         android:id="@+id/tvUserName"
         android:textSize="20dp"
-
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:layout_editor_absoluteY="0dp"

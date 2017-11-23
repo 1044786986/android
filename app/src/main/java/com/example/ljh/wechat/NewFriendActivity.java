@@ -31,12 +31,13 @@ public class NewFriendActivity extends AppCompatActivity{
     private TextView tvBack;
     private LinearLayoutManager linearLayoutManager;
 
-    private RecycleViewAdapter_NewFriend adapter_newFriend;
+    private static RecycleViewAdapter_NewFriend adapter_newFriend;
 
     private static List<AddFriendBean> datalist = new ArrayList<AddFriendBean>();
 
     private Handler handler = new Handler();
     private SQLiteDatabase sqLiteDatabase;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +70,8 @@ public class NewFriendActivity extends AppCompatActivity{
      * 添加记录添加到sqlite数据库
      */
     public void insertSqlite(String my,String friend,byte head[],String data,String state,String date){
-        sqLiteDatabase = openOrCreateDatabase("ljh.db",0,null);
+        //sqLiteDatabase = openOrCreateDatabase("ljh.db",0,null);
+        sqLiteDatabase = LoginActivity.databaseHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("my",my);
         contentValues.put("friend",friend);
@@ -79,14 +81,16 @@ public class NewFriendActivity extends AppCompatActivity{
         contentValues.put("date",date);
         sqLiteDatabase.insert("add_address",null,contentValues);
         sqLiteDatabase.close();
-        updateAdapter();
+        //updateAdapter();
     }
 
     public void updateSqlite(String friend,String state){
-        sqLiteDatabase = openOrCreateDatabase("ljh.db",0,null);
+        //sqLiteDatabase = openOrCreateDatabase("ljh.db",0,null);
+        sqLiteDatabase = LoginActivity.databaseHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("state",state);
         sqLiteDatabase.update("add_address",contentValues,"friend=?",new String[]{friend});
+        getData();
         updateAdapter();
     }
 
@@ -137,5 +141,11 @@ public class NewFriendActivity extends AppCompatActivity{
                 NewFriendActivity.this.finish();
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        datalist.clear();
     }
 }

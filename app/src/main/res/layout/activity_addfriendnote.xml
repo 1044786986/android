@@ -13,7 +13,7 @@
             android:id="@+id/tvCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="取消"
+            android:text="@string/cancel"
             android:textColor="@color/TitleBarTextColor"
             android:textSize="20dp"
             android:layout_centerVertical="true"
@@ -32,7 +32,7 @@
             android:layout_alignTop="@+id/tvCancel"
             android:textColor="@color/TitleBarTextColor"
             android:textSize="20dp"
-            android:text="发送" />
+            android:text="@string/send" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -41,12 +41,12 @@
             android:layout_centerHorizontal="true"
             android:textColor="@color/TitleBarTextColor"
             android:textSize="25dp"
-            android:text="朋友验证" />
+            android:text="@string/friendVerification" />
     </RelativeLayout>
 
     <TextView
-        android:text="你需要发送验证申请，等待对方通过"
-        android:background="#2727"
+        android:text="@string/needVerification"
+        android:background="@color/SpaceBgColor"
         android:padding="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

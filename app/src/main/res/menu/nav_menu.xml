@@ -2,9 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
         <item android:id="@+id/nav_boutique"
+            android:icon="@mipmap/ic_star_rate_white_18dp"
             android:title="精品区"/>
 
         <item android:id="@+id/nav_myself"
+            android:icon="@mipmap/ic_home_white_18dp"
             android:title="我的帖子"></item>
     </group>
 </menu>

@@ -2,13 +2,14 @@ package com.example.ljh.wechat;
 
 import android.graphics.Bitmap;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by ljh on 2017/10/29.
  */
 
-public class ShareBean {
+public class ShareBean implements Serializable{
 
     private String username;
     private String headString;
@@ -19,10 +20,13 @@ public class ShareBean {
     private String nice;
     private String id;
     private String type;
+    private String nonice;
 
     private List<String>list;
 
-    ShareBean(String id,String username,String type,String title,String content,String date,String comment,String nice,List<String>list){
+    ShareBean(){}
+
+    ShareBean(String id,String username,String type,String title,String content,String date,String comment,String nice,String nonice,List<String>list){
         this.id = id;
         this.username = username;
         this.title = title;
@@ -30,8 +34,17 @@ public class ShareBean {
         this.date = date;
         this.comment = comment;
         this.nice = nice;
+        this.nonice = nonice;
         this.list = list;
         this.type = type;
+    }
+
+    public String getNonice(){
+        return nonice;
+    }
+
+    public void setNonice(String nonice){
+        this.nonice = nonice;
     }
 
     public String getHeadString(){

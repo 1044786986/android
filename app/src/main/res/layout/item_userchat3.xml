@@ -12,108 +12,129 @@
             android:layout_height="wrap_content" />
 
     <LinearLayout
+        android:layout_marginTop="15dp"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/ivFriendHead"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="5dp"
-            android:src="@drawable/address_normal" />
+            android:scaleType="fitXY"
+            android:src="@mipmap/ic_person_black_24dp" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
+    <LinearLayout
+        android:layout_marginRight="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
             <TextView
                 android:id="@+id/tvFriendText"
                 android:layout_width="wrap_content"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:layout_marginTop="0dp"
-                android:background="@drawable/chatto_bg_focused_left"
+                android:background="@drawable/msg_left"
                 android:gravity="center_vertical"
-                android:text="我是珊珊"
                 android:textSize="18dp" />
 
             <ImageView
-                android:id="@+id/ivFriendImage"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:id="@+id/ivVoice_left"
+                android:layout_width="wrap_content"
+                android:layout_height="43dp"
                 android:layout_marginLeft="10dp"
-                android:layout_marginTop="10dp"
-                android:src="@mipmap/ic_launcher" />
-        </LinearLayout>
+                android:scaleType="fitStart"
+                android:background="@drawable/msg_left"
+                android:src="@drawable/voice" />
 
-        <ImageView
-            android:id="@+id/ivVoice_left"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_marginLeft="-110dp"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/chatto_bg_focused_left"
-            android:src="@drawable/voice" />
+            <TextView
+                android:id="@+id/tvVoiceLeft"
+                android:textSize="20dp"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="6S" />
 
-        <TextView
-            android:id="@+id/tvVoiceLeft"
-            android:textSize="20dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="6S" />
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/ivFriendImage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/msg_left"
+        android:scaleType="fitXY"
+        android:src="@mipmap/ic_launcher" />
+    </LinearLayout>
+    </LinearLayout>
+
 
     <LinearLayout
             android:orientation="horizontal"
             android:layout_marginBottom="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right">
 
             <LinearLayout
                 android:orientation="vertical"
-                android:layout_width="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content">
 
                 <LinearLayout
+                    android:layout_gravity="right"
                     android:orientation="horizontal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
 
-                    <TextView
-                        android:id="@+id/tvVoiceRight"
-                        android:text="6s"
-                        android:textSize="20dp"
-                        android:layout_marginLeft="200dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
                 <TextView
                     android:id="@+id/tvMyText"
-                    android:text="我是好好"
+                    android:text="啊啊啊啊"
                     android:textSize="18dp"
-                    android:background="@drawable/chatto_bg_focused"
-                    android:layoutDirection="rtl"
-                    android:textDirection="rtl"
-                    android:layout_marginLeft="0dp"
-                    android:layout_marginRight="5dp"
-                    android:layout_marginTop="0dp"
+                    android:background="@drawable/msg_right"
                     android:gravity="center_vertical"
+                    android:maxLength="500"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginRight="10dp"
                     android:layout_width="wrap_content"
-                    android:layout_height="50dp" />
+                    android:layout_height="wrap_content" />
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:id="@+id/tvVoiceRight"
+                            android:text="6s"
+                            android:textSize="20dp"
+                            android:layout_gravity="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <ImageView
+                            android:id="@+id/ivVoice_right"
+                            android:src="@drawable/voice"
+                            android:background="@drawable/msg_right"
+                            android:scaleType="fitEnd"
+                            android:layout_width="wrap_content"
+                            android:layout_height="43dp" />
+                    </LinearLayout>
 
                 </LinearLayout>
 
         <ImageView
+            android:background="@drawable/msg_right"
             android:id="@+id/ivMyImage"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="200dp"
             android:src="@mipmap/ic_launcher"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="right"
+            android:scaleType="fitXY"
             android:layout_width="100dp"
             android:layout_height="100dp" />
 
@@ -121,18 +142,10 @@
 
 
         <ImageView
-            android:id="@+id/ivVoice_right"
-            android:src="@drawable/voice"
-            android:background="@drawable/chatto_bg_focused"
-            android:layout_marginLeft="-105dp"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp" />
-
-
-        <ImageView
             android:id="@+id/ivMyHead"
-            android:src="@drawable/address_normal"
-            android:layout_marginLeft="5dp"
+            android:src="@mipmap/ic_person_black_24dp"
+            android:scaleType="fitXY"
+            android:layout_marginRight="10dp"
             android:layout_width="50dp"
             android:layout_height="50dp" />
         </LinearLayout>

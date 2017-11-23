@@ -3,4 +3,40 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RadioButton
+            android:id="@+id/rbDefault"
+            android:text="@string/followingSystem"
+            android:textSize="20dp"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:background="@color/Line"
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"></LinearLayout>
+        <RadioButton
+            android:id="@+id/rbChinese"
+            android:text="@string/simplifiedChinese"
+            android:textSize="20dp"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:background="@color/Line"
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"></LinearLayout>
+        <RadioButton
+            android:id="@+id/rbEnglish"
+            android:text="@string/U.S.English"
+            android:textSize="20dp"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </RadioGroup>
+
 </LinearLayout>

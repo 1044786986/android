@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp">
         <TextView
-            android:text="我的"
+            android:text="@string/my"
             android:textColor="@color/TitleBarTextColor"
             android:textSize="20dp"
             android:layout_centerInParent="true"
@@ -30,7 +30,8 @@
 
         <ImageView
             android:id="@+id/ivHead"
-            android:src="@drawable/address_normal"
+            android:src="@mipmap/ic_person_black_24dp"
+            android:scaleType="fitXY"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_gravity="center"
@@ -52,31 +53,6 @@
         android:layout_width="match_parent"
         android:layout_height="0.1dp"></LinearLayout>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="50dp">
-        <TextView
-            android:text="邮箱:"
-            android:textSize="20dp"
-            android:layout_gravity="center"
-            android:layout_marginLeft="10dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/tvEmail"
-            android:text="123@.com"
-            android:textSize="15dp"
-            android:layout_gravity="center"
-            android:layout_marginLeft="10dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <ImageView
-            android:src="@mipmap/ic_navigate_next_black_24dp"
-            android:layout_gravity="center"
-            android:layout_width="30dp"
-            android:layout_height="30dp" />
-    </LinearLayout>
 
     <LinearLayout
         android:background="@color/SpaceBgColor"
@@ -84,11 +60,12 @@
         android:layout_height="15dp"></LinearLayout>
 
     <LinearLayout
+        android:id="@+id/layout_myInformation"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="50dp">
         <TextView
-            android:text="我的信息"
+            android:text="@string/myInformation"
             android:textSize="20dp"
             android:layout_gravity="center"
             android:layout_marginLeft="10dp"
@@ -102,10 +79,11 @@
         android:layout_height="0.1dp"></LinearLayout>
 
     <LinearLayout
+        android:id="@+id/layout_setting"
         android:layout_width="match_parent"
         android:layout_height="50dp">
         <TextView
-            android:text="设置"
+            android:text="@string/setUp"
             android:textSize="22dp"
             android:layout_marginLeft="10dp"
             android:layout_gravity="center_vertical"
@@ -120,12 +98,13 @@
 
 
     <LinearLayout
+        android:id="@+id/layout_quit"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="50dp">
 
         <TextView
-            android:text="退出登录"
+            android:text="@string/quitToApp"
             android:textSize="20dp"
             android:layout_gravity="center"
             android:layout_marginLeft="10dp"
@@ -138,19 +117,6 @@
         android:layout_width="match_parent"
         android:layout_height="1px"></LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/linearLayout_KaoShiApp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:text="考试app"
-            android:textSize="20dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:paddingLeft="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
 
     <LinearLayout
         android:background="@color/SpaceBgColor"

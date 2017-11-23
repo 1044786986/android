@@ -16,7 +16,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
     private static final String name = "ljh.db"; //数据库名称
     private static final int version = 1;
-     //SQLiteDatabase sqLiteDatabase;
 
     public DatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
@@ -38,6 +37,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
         sqLiteDatabase.execSQL("CREATE TABLE add_address (_id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + "my VARCHAR ,friend VARCHAR ,head BLOB ,data VARCHAR,state VARCHAR ,date VARCHAR)");
+
     }
 
     @Override

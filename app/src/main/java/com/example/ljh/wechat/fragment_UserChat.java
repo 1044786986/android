@@ -24,9 +24,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v4.widget.PopupWindowCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
 import android.util.Base64;
 import android.util.Base64InputStream;
 import android.util.Log;
@@ -37,10 +39,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -84,7 +90,8 @@ import cn.finalteam.galleryfinal.model.PhotoInfo;
  */
 
 public class fragment_UserChat extends Fragment implements View.OnClickListener{
-    private static RecyclerView recyclerView;
+    private static RecyclerView recyclerView,recyclerView_ppw;
+    //private ListView listView;  //聊天消息操作选择列表
     private LinearLayoutManager linearLayoutManager;
     private ImageView ivVoice,ivSendImage,ivMessage;  //语音按键，显示语音状态，发送图片,用户信息
     private ImageView ivAlbum,ivCamera; //打开相册,打开相机
@@ -94,7 +101,11 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
     private static TextView tvBack; //返回键
     private LinearLayout linearLayout_UserChat,linearLayout_SendImage;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private PopupWindowCompat popupWindowCompat;
+    private PopupWindow popupWindow;
     private View view;
+    private View popupWindowView;
+
 
     private Uri uri;
     private static String toUser;  //好友名字
@@ -105,7 +116,8 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
     private boolean isVocing = false; //判断是否正在录音
 
     private static List<Chat_LogBean> datalist;    //历史聊天记录
-    private static List<Chat_LogBean> datalist2;
+    private List<Chat_LogBean> datalist2;
+    private List<String> ppwList;  //PopuWindow数据源
 
     private SQLiteDatabase sqLiteDatabase;
     private static Handler handler = new Handler(Looper.getMainLooper());
@@ -121,10 +133,13 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
     private PrintWriter printWriter;*/
 
     static FragmentChat fragmentChat;
-    MediaRecorderManager mediaRecorderManager;
-    DialogManager dialogManager;
-    ImageLoader imageLoader;
-    static RecycleViewAdapter_UserChat recycleViewAdapter_userChat;
+    MediaRecorderManager mediaRecorderManager;  //播放音乐管理
+    DialogManager dialogManager;   //弹窗管理
+    ImageLoader imageLoader;    //图片加载
+    static RecycleViewAdapter_UserChat recycleViewAdapter_userChat; //聊天记录适配器
+    RecycleView_userchat_ppw recycleViewadapter_ppw;    //长按操作选择适配器
+    CompressImageManager compressImageManager;  //压缩管理
+    MClipboardManager mClipboardManager; //复制粘贴管理
 
    // AudioFinishRecorderListener audioFinishRecorderListener;
 
@@ -138,14 +153,19 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
         path = getActivity().getApplication().getFilesDir().getPath();
 
         fragmentChat = new FragmentChat();
+        mClipboardManager = new MClipboardManager(getActivity());
         mediaRecorderManager = new MediaRecorderManager(getActivity());
         dialogManager = new DialogManager(getActivity());
+        compressImageManager = new CompressImageManager();
         datalist = fragmentChat.getDatalist(toUser);
         datalist2 = new ArrayList<Chat_LogBean>();
+        ppwList = new ArrayList<String>();
         n = datalist.size()-20;
         m = datalist.size();
         setDatalist();
+        addppwList();
         initView(view);
+        initPopuWindow();
         voicing();
         //initSocket();
         //getPermission();
@@ -274,9 +294,7 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
                             else if(STATE_RECORDING && isVocing){
                                 Log.i("tag","---------成功录音");
                                 mediaRecorderManager.release();
-                                /*if(audioFinishRecorderListener != null){
-                                    audioFinishRecorderListener.onFinish(time,MediaRecorderManager.CurrentFilePath);
-                                }*/
+
                                 sendVoiceMessage(MediaRecorderManager.fileName);
                                 dialogManager.dismissDialog();
                             }
@@ -298,7 +316,6 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
             public void run() {
                 try {
                     while (isVocing){
-                        Log.i("tag","-------------time=" + time);
                         Thread.sleep(100);
                         final int level = mediaRecorderManager.getLevel(7);
                         handler.post(new Runnable() {
@@ -324,13 +341,10 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
             public void run() {
                 super.run();
                 try {
-                    /*btVoicing.setOnTouchListener(null);
-                    btVoicing.setOnLongClickListener(null);*/
                     Thread.sleep(1000);
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            //voicing();
                             dialogManager.dismissDialog();
                         }
                     });
@@ -445,7 +459,14 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
                 if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                     openAlbum();
                 }else{
-                    Toast.makeText(getActivity(), "you denide thi permission", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), R.string.permissionDenied , Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case 2:
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    openCamera();
+                }else{
+                    Toast.makeText(getActivity(), R.string.permissionDenied , Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
@@ -456,16 +477,16 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == getActivity().RESULT_OK){
-            try {
-                Bitmap bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(uri));
-                bitmap = CompressImage(bitmap);
+                /*Bitmap bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(uri));
+                bitmap = CompressImage(bitmap)*/
+                Bitmap bitmap = compressImageManager.CompressToCamera(getActivity(),uri);
                 sendCameraImageMessage(bitmap);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
         }
     }
 
+    /**
+     * 每一条信息设置监听
+     */
     public void setOnClick(){
         recycleViewAdapter_userChat.setRecycleViewItemClickListener(
                 new RecycleViewAdapter_UserChat.RecycleViewItemClickListener() {
@@ -476,7 +497,8 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
 
             @Override
             public void onLongItemClick(View view, int position) {
-
+                Log.i("aa","onLongItemClick");
+                showPopupWindow(view,position);
             }
         });
 
@@ -486,6 +508,50 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
 
             }
         });
+    }
+
+    /**
+     *显示popupWindow
+     * view 长按的view
+     * positon 聊天记录在datalist的位置
+     */
+    public void showPopupWindow(View view, final int position){
+        popupWindow.showAsDropDown(view,100,-100);
+        recycleViewadapter_ppw.setOnItemClickListener(new RecycleView_userchat_ppw.OnItemClickListener() {
+            @Override
+            public void OnItemClick(View view, int pos) {
+                switch (pos){
+                    case 0:             //转发
+                        break;
+                    case 1:             //复制
+                        mClipboardManager.copyContent(datalist.get(position).getText());
+                        break;
+                    case 2:             //更多
+                        break;
+                    case 3:             //删除
+                        deleteChatLog(position);
+                        updateAdapter();
+                        break;
+                }
+                popupWindow.dismiss();
+            }
+        });
+    }
+
+    /**
+     * 初始化popupWindow
+     */
+    public void initPopuWindow(){
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        popupWindowView = LayoutInflater.from(getActivity()).inflate(R.layout.popuwindow_userchat,null);
+        recyclerView_ppw = (RecyclerView) popupWindowView.findViewById(R.id.ListView_ppw_userchat);
+        recycleViewadapter_ppw = new RecycleView_userchat_ppw(getActivity(),ppwList);
+        recyclerView_ppw.setLayoutManager(linearLayoutManager);
+        recyclerView_ppw.setAdapter(recycleViewadapter_ppw);
+
+        popupWindow = new PopupWindow(popupWindowView, 400,
+                500,true);
+        popupWindow.setContentView(popupWindowView);
     }
 
     /**
@@ -558,7 +624,7 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
                 try {
                     for (int i = 0; i < resultList.size(); i++) {
                         String photoInfo = resultList.get(i).getPhotoPath();
-                        Bitmap bitmap = CompressImage(BitmapFactory.decodeFile(photoInfo));//获取并压缩图片
+                        Bitmap bitmap = compressImageManager.CompressToAlbum(photoInfo); //获取并压缩图片
                         byte image[] = image(bitmap);
                         String imageString = Base64.encodeToString(image, Base64.DEFAULT);
 
@@ -691,13 +757,14 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
     }
 
     /**
-     * 对图片进行压缩
+     * 删除一条聊天记录
      */
-    public Bitmap CompressImage(Bitmap bitmap){
-        Matrix matrix = new Matrix();
-        matrix.setScale(0.5f,0.5f);
-        bitmap = Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);
-        return bitmap;
+    public void deleteChatLog(int position){
+        String fromUser = datalist.get(position).getFromUser();
+        String toUser = datalist.get(position).getToUser();
+        String date = datalist.get(position).getDate();
+        sqLiteDatabase.delete("chat_log","fromUser=? and toUser=? and date=?",new String[]{fromUser,toUser,date});
+        datalist.remove(position);
     }
 
     /**
@@ -708,6 +775,16 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String dateString = simpleDateFormat.format(date);
         return dateString;
+    }
+
+    /**
+     * PopuWindow增加数据
+     */
+    public void addppwList(){
+        ppwList.add("复制");
+        ppwList.add("转发");
+        ppwList.add("更多");
+        ppwList.add("删除");
     }
 
     static void updateAdapter(){
@@ -748,6 +825,9 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if(sqLiteDatabase.isOpen()){
+            sqLiteDatabase.close();
+        }
         /*try {
             outputStream.close();
             outputStreamWriter.close();
@@ -792,6 +872,9 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
         linearLayout_UserChat.setOnClickListener(this);
 
         etMessage = (EditText) view.findViewById(R.id.etMessage);
+        etMessage.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        etMessage.setSingleLine(false);
+        etMessage.setHorizontallyScrolling(false);
         etMessage.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {

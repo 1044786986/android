@@ -71,7 +71,6 @@ public class MediaRecorderManager {
                     file.createNewFile();
                 }
                 File file1 = new File(file,fileName);
-                //CurrentFilePath = path + "/" + fileName;
                 CurrentFilePath =  file1.getAbsolutePath();
                 mediaRecorder = new MediaRecorder();
 

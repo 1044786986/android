@@ -12,7 +12,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -47,20 +49,27 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     static FragmentAddress fragmentAddress;
     static MainActivity Instance;
 
-    static final String Ip = "192.168.191.1";
-    static final String SearchMyHead = "http://192.168.191.1:8080/wechat/SearchMyHeadServlet";
-    static final String  SearchFriendsServlet = "http://192.168.191.1:8080/wechat/SearchFriendsServlet";
+    static final String Ip = "192.168.155.1";
+    static final String SearchMyHead = "http://" + Ip + ":8080/wechat/SearchMyHeadServlet";
+    static final String  SearchFriendsServlet = "http://" + Ip +":8080/wechat/SearchFriendsServlet";
+    static final String SetPostServlet = "http://" + Ip + ":8080/wechat/SetPostServlet2";
+    static final String GetPostServlet = "http://" + Ip + ":8080/wechat/GetPost";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         startActivity();
+        /*//透明状态栏
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        //透明导航栏
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);*/
     }
 
     private void startActivity(){
         Instance = this;
-        getUserName();
+        getUserName();  //获取当前用户名
+        getSetting();
         initView();
         selected(4);
         selected(3);
@@ -99,8 +108,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         hideFragment();
         switch (i){
             case 1:
-                ib_tab_chat.setImageResource(R.drawable.chat_selected);
-                tvChat.setTextColor(Color.rgb(255,128,0));
+                ib_tab_chat.setImageResource(R.drawable.ic_chat_bubble_outline_blue_24dp);
+                tvChat.setTextColor(Color.rgb(0,188,212));
 
                 if(fragment_chat == null){
                     fragment_chat = new FragmentChat();
@@ -111,8 +120,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 }
                 break;
             case 2:
-                ib_tab_address.setImageResource(R.drawable.address_selected);
-                tvAddress.setTextColor(Color.rgb(255,128,0));
+                ib_tab_address.setImageResource(R.drawable.ic_group_blue_24dp);
+                tvAddress.setTextColor(Color.rgb(0,188,212));
 
                 if(fragment_address == null){
                     fragment_address = new FragmentAddress();
@@ -124,8 +133,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
                 break;
             case 3:
-                ib_tab_share.setImageResource(R.drawable.share_selected);
-                tvShare.setTextColor(Color.rgb(255,128,0));
+                ib_tab_share.setImageResource(R.drawable.ic_chrome_reader_mode_blue_24dp);
+                tvShare.setTextColor(Color.rgb(0,188,212));
 
                 if(fragment_share == null){
                     fragment_share = new FragmentShare();
@@ -135,8 +144,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 }
                 break;
             case 4:
-                ib_tab_my.setImageResource(R.drawable.more_selected);
-                tvMy.setTextColor(Color.rgb(255,128,0));
+                ib_tab_my.setImageResource(R.drawable.ic_menu_blue_24dp);
+                tvMy.setTextColor(Color.rgb(0,188,212));
 
                 if(fragment_my == null){
                     fragment_my = new FragmentMy();
@@ -166,10 +175,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
 
     public void setNormalColor(){
-        ib_tab_chat.setImageResource(R.drawable.chat_normal);
-        ib_tab_address.setImageResource(R.drawable.address_normal);
-        ib_tab_share.setImageResource(R.drawable.share_normal);
-        ib_tab_my.setImageResource(R.drawable.more_normal);
+        ib_tab_chat.setImageResource(R.drawable.ic_chat_bubble_outline_black_24dp);
+        ib_tab_address.setImageResource(R.drawable.ic_group_black_24dp);
+        ib_tab_share.setImageResource(R.drawable.ic_chrome_reader_mode_black_24dp);
+        ib_tab_my.setImageResource(R.drawable.ic_menu_black_24dp);
 
         tvChat.setTextColor(Color.rgb(0,0,0));
         tvAddress.setTextColor(Color.rgb(0,0,0));
@@ -256,6 +265,14 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         isFirstPlay = false;
     }
 
+    /**
+     * 获取消息提醒设置
+     */
+    public void getSetting(){
+        MessageRemindActivity messageRemindActivity = new MessageRemindActivity();
+        //messageRemindActivity.addSharePreferences();
+        messageRemindActivity.addSharePreferences();
+    }
 
     public void initView(){
         ib_tab_chat = (ImageButton) findViewById(R.id.ib_tab_chat);
@@ -287,5 +304,20 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         badgeView4.setTargetView(linearLayout_my);
 
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+    }
+
+    /**
+     * 重写返回按钮，使程序点击返回按钮不退出
+     */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK){
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            startActivity(intent);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

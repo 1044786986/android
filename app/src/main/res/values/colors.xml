@@ -3,12 +3,18 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="TitleBarBgColor">#4b4c4f</color>
+    <color name="TitleBarBgColor">#00BCD4</color>
     <color name="TitleBarTextColor">#fff</color>
     <color name="VoicingBgColor">#767676</color>
-    <color name="SpaceBgColor">#E7E6E5</color>
+    <color name="SpaceBgColor">#EFEFEF</color>
     <color name="Line">#272727</color>
     <color name="ButtonBackground">#C7C6C6</color>
     <color name="layout_all_NormalBackground">#EEEDED</color>
     <color name="layout_all_SelectBackground">#E0DDDD</color>
+    <color name="nav_header_TextColor">#ffffff</color>
+    <color name="nat_LineColor">#4b4c4f</color>
+    <color name="headBackground">#EEEDED</color>
+    <color name="PreViewBackground">#000000</color>
+    <color name="selectTabText">#00BCD4</color>
+    <color name="shareButtonText">#8B8B8B</color>
 </resources>

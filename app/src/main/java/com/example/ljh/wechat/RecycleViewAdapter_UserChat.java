@@ -1,6 +1,7 @@
 package com.example.ljh.wechat;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
@@ -44,7 +45,6 @@ public class RecycleViewAdapter_UserChat extends RecyclerView.Adapter<RecycleVie
     private Handler handler;
 
     FragmentMy fragmentMy;
-    MediaPlayManager mediaPlayManager;
 
     RecycleViewAdapter_UserChat(Context context, List<Chat_LogBean>datalist){
         this.layoutInflater = LayoutInflater.from(context);
@@ -82,7 +82,7 @@ public class RecycleViewAdapter_UserChat extends RecyclerView.Adapter<RecycleVie
         String fromUser = datalist.get(position).getFromUser(); //谁发的消息
         String text = datalist.get(position).getText(); //消息内容
         String date = datalist.get(position).getDate(); //发送时间
-        byte head[] = datalist.get(position).getImage();  //发送的图片流
+        final byte head[] = datalist.get(position).getImage();  //发送的图片流
         final String voicePath = datalist.get(position).getVoicePath();//获取语音路径
         if (voicePath != null) {
             time = getVoiceTime(context.getApplicationContext().getFilesDir().getPath() + "/" + voicePath);
@@ -96,10 +96,10 @@ public class RecycleViewAdapter_UserChat extends RecyclerView.Adapter<RecycleVie
             /**
              * 隐藏所有控件
              */
-            holder.tvMyText.setVisibility(View.INVISIBLE);
+            holder.tvMyText.setVisibility(View.GONE);
             holder.ivMyImage.setVisibility(View.GONE);
             holder.ivVoiceRight.setVisibility(View.GONE);
-            holder.tvVoiceRight.setVisibility(View.INVISIBLE);
+            holder.tvVoiceRight.setVisibility(View.GONE);
 
             holder.tvFriendText.setVisibility(View.GONE);
             holder.ivFriendImage.setVisibility(View.GONE);
@@ -116,14 +116,25 @@ public class RecycleViewAdapter_UserChat extends RecyclerView.Adapter<RecycleVie
             if (text != null) {
                 holder.tvMyText.setText(text);
                 holder.tvMyText.setVisibility(View.VISIBLE);
+                setOnClick(holder.tvMyText,position);   //设置监听
             } else if (head != null) {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(head, 0, head.length);
                 holder.ivMyImage.setImageBitmap(bitmap);
                 holder.ivMyImage.setVisibility(View.VISIBLE);
+                setOnClick(holder.ivMyImage,position);
+                holder.ivMyImage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(context,PreviewActivity.class);
+                        intent.putExtra("bitmap",head);
+                        context.startActivity(intent);
+                    }
+                });
             } else if (voicePath != null) {
                 holder.tvVoiceRight.setVisibility(View.VISIBLE);
                 holder.tvVoiceRight.setText(time + "s");
                 holder.ivVoiceRight.setVisibility(View.VISIBLE);
+                setOnClick(holder.ivVoiceRight,position);
                 holder.ivVoiceRight.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -162,7 +173,7 @@ public class RecycleViewAdapter_UserChat extends RecyclerView.Adapter<RecycleVie
                                                 holder.ivVoiceRight.setImageResource(resId);    //播放动画
                                             }
                                         });
-                                        Thread.sleep(500);
+                                        Thread.sleep(300);
                                     }
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
@@ -174,10 +185,9 @@ public class RecycleViewAdapter_UserChat extends RecyclerView.Adapter<RecycleVie
                 });
             }
 
-
         } else if (!fromUser.equals(MainActivity.username)) {  //好友发送的消息
             holder.ivFriendImage.setVisibility(View.GONE);
-            holder.tvFriendText.setVisibility(View.INVISIBLE);
+            holder.tvFriendText.setVisibility(View.GONE);
             holder.ivVoiceLeft.setVisibility(View.GONE);
             holder.tvVoiceLeft.setVisibility(View.GONE);
 
@@ -194,14 +204,25 @@ public class RecycleViewAdapter_UserChat extends RecyclerView.Adapter<RecycleVie
             if (text != null) {
                 holder.tvFriendText.setText(text);
                 holder.tvFriendText.setVisibility(View.VISIBLE);
+                setOnClick(holder.tvFriendText,position);
             } else if (head != null) {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(head, 0, head.length);
                 holder.ivFriendImage.setImageBitmap(bitmap);
                 holder.ivFriendImage.setVisibility(View.VISIBLE);
+                setOnClick(holder.ivFriendImage,position);
+                holder.ivFriendImage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(context,PreviewActivity.class);
+                        intent.putExtra("bitmap",head);
+                        context.startActivity(intent);
+                    }
+                });
             } else if (voicePath != null) {
                 holder.tvVoiceLeft.setVisibility(View.VISIBLE);
                 holder.tvVoiceLeft.setText(time + "s");
                 holder.ivVoiceLeft.setVisibility(View.VISIBLE);
+                setOnClick(holder.ivVoiceLeft,position);
                 holder.ivVoiceLeft.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -248,25 +269,59 @@ public class RecycleViewAdapter_UserChat extends RecyclerView.Adapter<RecycleVie
                         }.start();
                     }
                 });
-
             }
-
-            if (listener != null) {
-                holder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        int position = holder.getLayoutPosition();
-                        listener.onItemClick(holder.itemView, position);
-                    }
-                });
-            }
-
         }
+
+        /*if (listener != null) {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = holder.getLayoutPosition();
+                    listener.onItemClick(holder.itemView, position);
+                }
+            });
+
+            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    int position = holder.getLayoutPosition();
+                    listener.onLongItemClick(holder.itemView,position);
+                    return false;
+                }
+            });
+        }*/
+
     }
 
     @Override
     public int getItemCount() {
         return datalist.size();
+    }
+
+    /**
+     * 给文本消息、图片、或者语音消息设置监听
+     * @param view
+     * @param pos
+     */
+    public void setOnClick(View view,final int pos){
+        if (listener != null) {
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = pos;
+                    listener.onItemClick(view, position);
+                }
+            });
+
+            view.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    int position = pos;
+                    listener.onLongItemClick(v,position);
+                    return false;
+                }
+            });
+        }
     }
 
    /* private Handler handler = new Handler(context.getMainLooper()){

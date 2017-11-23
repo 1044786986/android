@@ -3,4 +3,57 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <RelativeLayout
+        android:background="@color/TitleBarBgColor"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+        <RelativeLayout
+            android:id="@+id/layout_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:text="@string/back"
+                android:textSize="20dp"
+                android:textColor="@color/TitleBarTextColor"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="18dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:src="@mipmap/ic_chevron_left_white_24dp" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:text="@string/preview"
+            android:textColor="@color/TitleBarTextColor"
+            android:textSize="21dp"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:background="@color/Line"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"></LinearLayout>
+
+    <ImageView
+        android:id="@+id/ivPreview"
+        android:layout_weight="1"
+        android:scaleType="fitXY"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+
+    <LinearLayout
+        android:background="@color/PreViewBackground"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"></LinearLayout>
+
 </LinearLayout>

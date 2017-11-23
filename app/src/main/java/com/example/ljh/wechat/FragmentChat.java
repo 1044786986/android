@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
@@ -71,6 +72,12 @@ public class FragmentChat extends Fragment{
 
     public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat,null,false);
+
+        //透明状态栏
+        //getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        //透明导航栏
+       //getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+
         datalist = new ArrayList<List_chat_logBean>();
         userlist = new ArrayList<AddressBean>();
         datalist2 = new ArrayList<List_chat_logBean>();
@@ -202,15 +209,19 @@ public class FragmentChat extends Fragment{
             //updataFriendItem(i); //更新好友位置
         }else if(i != datalist.size() && !fromUser.equals(MainActivity.username)){  //我接受的消息
             datalist.get(i).getList().add(new Chat_LogBean(fromUser,toUser,text,image,date,voicePath));
-            datalist.get(i).setUnread(datalist.get(i).getUnread() + 1); //增加未读消息数量
+            if(!datalist.get(i).getUsername().equals(UserChatActivity.toUser)){
+                datalist.get(i).setUnread(datalist.get(i).getUnread() + 1); //增加未读消息数量
+            }
             //updataFriendItem(i); //更新好友位置
         }
         updataFriendItem(i); //更新好友位置
 
         if(UserChatActivity.UserChat_State == 1) {  //更新聊天界面列表
             fragment_UserChat.updateAdapter();
+            Log.i("aa","fragment_UserChat.updateAdapter();");
         }else{
             updateAdapter();
+            Log.i("aa","updateAdapter();");
         }
     }
 

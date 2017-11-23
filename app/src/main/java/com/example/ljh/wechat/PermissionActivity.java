@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -18,26 +19,29 @@ import android.widget.Toast;
  * Created by ljh on 2017/11/22.
  */
 
-public class PermissionManager extends AppCompatActivity{
+public abstract class PermissionActivity extends AppCompatActivity{
     final int OPEN_ALBUM = 0;
-    final int OPEN_CAMERA = 1;
-
 
     public void openAlbumPermission(){
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED){
+                != PackageManager.PERMISSION_GRANTED && Build.VERSION.SDK_INT >= 23){
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},OPEN_ALBUM);
+        }
+        else{
+            openAlbum();
         }
     }
 
     public void openCameraPermission(){
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED){
+                != PackageManager.PERMISSION_GRANTED && Build.VERSION.SDK_INT >= 23){
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},OPEN_ALBUM);
         }
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED){
+                != PackageManager.PERMISSION_GRANTED && Build.VERSION.SDK_INT >= 23){
                 ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.CAMERA},OPEN_ALBUM);
+        }else{
+            openCamera();
         }
     }
 
@@ -46,7 +50,7 @@ public class PermissionManager extends AppCompatActivity{
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode){
             case OPEN_ALBUM:
-                if(grantResults.length == 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED){
+                if(grantResults.length <= 0 || grantResults[0] == -1){
                     showTipDialog();
                 }
                 break;
@@ -77,4 +81,7 @@ public class PermissionManager extends AppCompatActivity{
         intent.setData(Uri.parse("package:" + getPackageName()));
         startActivity(intent);
     }
+
+    protected abstract void openCamera();
+    protected abstract void openAlbum();
 }

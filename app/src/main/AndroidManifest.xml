@@ -3,34 +3,32 @@
     package="com.example.ljh.wechat">
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.VIBRATE"/>
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
-    <uses-permission android:name="android.permission.EXPAND_STATUS_BAR"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" />
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION"/>
 
     <application
-
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/hi"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <provider
-            android:authorities="com.example.ljh.wechat.fileprovider"
             android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.example.ljh.wechat.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths">
-            </meta-data>
+                android:resource="@xml/file_paths"></meta-data>
         </provider>
 
         <supports-screens
@@ -40,9 +38,9 @@
             android:resizeable="true"
             android:smallScreens="true" />
 
-
-        <activity android:name=".LoginActivity" android:label="登录入口">
-
+        <activity
+            android:name=".LoginActivity"
+            android:label="我爱珊珊">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -50,24 +48,22 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".CreateSqlite">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-        <activity android:name=".RegisterActivity"/>
-        <activity android:name=".MainActivity"/>
-        <activity android:name=".AddFriendActivity"/>
-        <activity android:name=".AddFriendNoteActivity"/>
-        <activity android:name=".NewFriendActivity"/>
-        <activity android:name=".ModifyHeadActivity"/>
-        <activity android:name=".UserChatActivity">
-        </activity>
-        <activity android:name=".WriterActivity"/>
-
+        <activity android:name=".AnimationActivity" />
+        <activity android:name=".RegisterActivity" />
+        <activity android:name=".MainActivity" />
+        <activity android:name=".AddFriendActivity" />
+        <activity android:name=".AddFriendNoteActivity" />
+        <activity android:name=".NewFriendActivity" />
+        <activity android:name=".ModifyHeadActivity" />
+        <activity android:name=".UserChatActivity" />
+        <activity android:name=".WriterActivity" />
+        <activity android:name=".PreviewActivity"/>
+        <activity android:name=".MessageRemindActivity"/>
+        <activity android:name=".SetUpActivity"/>
+        <activity android:name=".ChatSettingActivity"/>
+        <activity android:name=".LanguageSettingActivity"/>
+        <activity android:name=".PostActivity"/>
+        <activity android:name=".MyPostActivity"/>
     </application>
 
 </manifest>

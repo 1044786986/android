@@ -47,6 +47,7 @@ public class AddFriendNoteActivity extends AppCompatActivity implements View.OnC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addfriendnote);
+        getSupportActionBar().hide();
 
         loginActivity = new LoginActivity();
         Intent intent = getIntent();

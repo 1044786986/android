@@ -7,6 +7,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -18,8 +21,10 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -57,6 +62,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import okhttp3.Call;
@@ -74,14 +80,14 @@ import okhttp3.Response;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     private Button btLogin; //登录按钮
     private EditText etUserName, etPassWord; //输入用户名和密码
-    private CheckBox cbPassWord, cbLogin;    //保存密码和自动登录
+    private CheckBox cbPassWord, cbAccount;    //保存密码和自动登录
     private TextView tvRegister;    //跳转注册页面
     private ProgressDialog progressDialog;
     static String result;   //服务器返回的结果
     private String username;    //用户名
     private String password;    //密码
-    private SharedPreferences sharedPreferences;
-    private SharedPreferences.Editor editor;
+    static SharedPreferences sharedPreferences;
+    static SharedPreferences.Editor editor;
     static Socket socket;
 
     private InputStream inputStream;    //输入流
@@ -97,16 +103,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     FragmentAddress fragmentAddress;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        getSupportActionBar().hide();
+        //getSupportActionBar().hide();
         databaseHelper = new DatabaseHelper(LoginActivity.this,"ljh.db",null,2);
         sqLiteDatabase = databaseHelper.getReadableDatabase();
         result = null;
         initView();
+        getSetting();
         Check();
-
     }
 
     @Override
@@ -121,6 +127,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     showDialogPassWord();
                 } else {
                     //SendData();
+
                     showDialogLogin();
                     login();
                 }
@@ -137,25 +144,39 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
      *
      */
     public void Check() {
-        String username = sharedPreferences.getString("username", "");
-        String password = sharedPreferences.getString("password", "");
+         username = sharedPreferences.getString("username", "");
+         password = sharedPreferences.getString("password", "");
 
-        if (password == "") {     //如果帐号为空的，
+        if (username != "" && password == "") {     //如果帐号为空的，
             cbPassWord.setChecked(false);
-        } else {
+            cbAccount.setChecked(true);
+            etUserName.setText(username);
+        } else if(password != ""){
+            cbAccount.setChecked(true);
             cbPassWord.setChecked(true);
             etUserName.setText(username);
             etPassWord.setText(password);
         }
 
-        cbLogin.setOnClickListener(new View.OnClickListener() {
+        if(username != "" && password != "" && cbPassWord.isChecked()){
+            showDialogLogin();
+            login();
+        }
+
+        cbPassWord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (cbLogin.isChecked()) {
-                    cbPassWord.setChecked(true);
+                if (cbPassWord.isChecked() && !cbAccount.isChecked()) {
+                    cbAccount.setChecked(true);
                 }
-                if (cbLogin.isChecked() && !cbPassWord.isChecked()) {
-                    cbLogin.setChecked(false);
+            }
+        });
+
+        cbAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (cbPassWord.isChecked() && !cbAccount.isChecked()) {
+                    cbPassWord.setChecked(false);
                 }
             }
         });
@@ -165,12 +186,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
      * 保存帐号密码
      */
     public void AddSharedPreferences() {
-        if (cbLogin.isChecked() || cbPassWord.isChecked()) {
+        if (cbAccount.isChecked()) {
             editor.putString("username", username);
+        }else{
+            editor.remove("username");
+        }
+        if(cbPassWord.isChecked()){
             editor.putString("password", password);
         }
         else {
-            editor.clear();
+            editor.remove("password");
         }
         editor.commit();
     }
@@ -236,13 +261,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             InsertChatLogInSqlite(fromUser,MainActivity.username,messageString,null,date,null);
                             FragmentChat fragmentChat = new FragmentChat();
                             fragmentChat.addDatalist(fromUser,MainActivity.username,messageString,null,date,null);
-
-                            if(UserChatActivity.UserChat_State != 1){
+                            Log.i("aa","UserChat_State = " + UserChatActivity.UserChat_State);
+                            /**
+                             * 如果不在聊天界面里面
+                             */
+                            if(UserChatActivity.UserChat_State != 1 && !UserChatActivity.toUser.equals(fromUser)){
                                 MainActivity.ChatCount++;//未读消息总数
                                 //MainActivity.vibrator.vibrate(500);
                                 FragmentChat.updateAdapter();
+                                if(MessageRemindActivity.msg){  //开启了消息提醒
+                                    NotificationManager1.sendNotification(fromUser,messageString,MainActivity.Instance,MainActivity.ChatCount);
+                                }
                             }
-                            NotificationManager1.sendNotification(fromUser,messageString,MainActivity.Instance,MainActivity.ChatCount);
                             message.obj = jsonObject;
                             message.sendToTarget();
                         }
@@ -257,16 +287,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             InsertChatLogInSqlite(fromUser,toUser,null,image,date,null);
                             fragmentChat.addDatalist(fromUser,toUser,null,image,date,null);
 
-                            if(UserChatActivity.UserChat_State != 1){
+                            if(UserChatActivity.UserChat_State != 1 && !UserChatActivity.toUser.equals(fromUser)){
                                 MainActivity.ChatCount++;//未读消息总数
-                                MainActivity.vibrator.vibrate(500);
+                                //MainActivity.vibrator.vibrate(500);
                                 FragmentChat.updateAdapter();
-
+                                if(MessageRemindActivity.msg){
+                                    NotificationManager1.sendNotification(fromUser,"图片",LoginActivity.this,1);
+                                }
                                 }
 
                             message.obj = jsonObject;
                             message.sendToTarget();
-                            NotificationManager1.sendNotification(fromUser,"图片",LoginActivity.this,1);
+
                         }
                         else if(type.equals("sendVoiceMessage")){
                             String fromUser = jsonObject.getString("fromUser");
@@ -293,12 +325,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             FragmentChat fragmentChat = new FragmentChat();
                             fragmentChat.addDatalist(fromUser,toUser,null,null,date,date+".amr");
 
-                            if(UserChatActivity.UserChat_State != 1){
+                            if(UserChatActivity.UserChat_State != 1 && !UserChatActivity.toUser.equals(fromUser)){
                                 MainActivity.ChatCount++;//未读消息总数
-                                MainActivity.vibrator.vibrate(500);
+                                //MainActivity.vibrator.vibrate(500);
                                 FragmentChat.updateAdapter();
+                                if(MessageRemindActivity.msg){
+                                    NotificationManager1.sendNotification(fromUser,"语音消息",LoginActivity.this,1);
+                                }
                             }
-                            NotificationManager1.sendNotification(fromUser,"语音消息",LoginActivity.this,1);
+
                         }
                     }
                 } catch (IOException e) {
@@ -322,7 +357,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     String result = jsonObject.getString("result");
                     if (result.equals("true")) {
                         AddSharedPreferences();
-                        progressDialog.dismiss();
+                        if(progressDialog != null && progressDialog.isShowing()){
+                            progressDialog.dismiss();
+                        }
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         intent.putExtra("username", username);
                         startActivity(intent);
@@ -363,6 +400,26 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     /**
+     * 初始化APP设置
+     */
+    public void getSetting(){
+        String currentLanguage = sharedPreferences.getString("currentLanguage","");
+
+        Resources res = getResources();
+        DisplayMetrics dm = res.getDisplayMetrics();
+        Configuration conf = res.getConfiguration();
+
+        if(currentLanguage.equals("跟随系统")){
+            conf.setLocale(Locale.getDefault());
+        }else if(currentLanguage.equals("简体中文")){
+            conf.setLocale(Locale.SIMPLIFIED_CHINESE);
+        }else if(currentLanguage.equals("english")){
+            conf.setLocale(Locale.ENGLISH);
+        }
+        res.updateConfiguration(conf, dm);
+    }
+
+    /**
      * 初始化
      */
     public void initView() {
@@ -375,7 +432,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         tvRegister.setOnClickListener(this);
 
         cbPassWord = (CheckBox) findViewById(R.id.cbPassWord);
-        cbLogin = (CheckBox) findViewById(R.id.cbLogin);
+        cbAccount = (CheckBox) findViewById(R.id.cbAccount);
 
         sharedPreferences = getSharedPreferences("MySharedPreferences", MODE_PRIVATE);
         editor = sharedPreferences.edit();
@@ -415,6 +472,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         progressDialog = new ProgressDialog(LoginActivity.this);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage("正在登录...");
+        progressDialog.setCancelable(false);
         progressDialog.show();
     }
 }
