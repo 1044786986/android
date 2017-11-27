@@ -61,9 +61,15 @@ public class MessageRemindActivity extends AppCompatActivity implements View.OnC
                     editor.putBoolean("msg",false);
                     editor.putBoolean("voice",false);
                     editor.putBoolean("shock",false);
+                    msg = false;
+                    voice = false;
+                    shock = false;
                 }else{
                     layout_voice_shock.setVisibility(View.VISIBLE);
                     editor.putBoolean("msg",true);
+                    msg = true;
+                    voice = true;
+                    shock = true;
                 }
                 break;
             case R.id.switch_voice:

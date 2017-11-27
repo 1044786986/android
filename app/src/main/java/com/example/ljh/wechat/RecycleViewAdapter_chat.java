@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,7 +27,7 @@ public class RecycleViewAdapter_chat extends RecyclerView.Adapter<RecycleViewAda
     private List<AddressBean>userlist;
 
     private LayoutInflater layoutInflater;
-    private Context context;
+    private static Context context;
 
     private RecycleViewItemClickListener listener = null;
 
@@ -69,16 +71,19 @@ public class RecycleViewAdapter_chat extends RecyclerView.Adapter<RecycleViewAda
             /**
              * 判断最后一条记录是否为图片,如果是则显示“图片”
              */
-            byte head[] = list.get(len - 1).getImage();
-            String path = list.get(len - 1).getVoicePath();
-            if (head != null) {
-                holder.chatLog.setText("图片");
-            }else if(path != null){
-                holder.chatLog.setText("语音消息");
+            if(list.size() != 0){
+                byte head[] = list.get(len - 1).getImage();
+                String path = list.get(len - 1).getVoicePath();
+                if (head != null) {
+                    holder.chatLog.setText("图片");
+                }else if(path != null){
+                    holder.chatLog.setText("语音消息");
+                }
+                else {
+                    holder.chatLog.setText(list.get(len - 1).getText());
+                }
             }
-            else {
-                holder.chatLog.setText(list.get(len - 1).getText());
-            }
+
             /**
              * 设置监听
              */
@@ -103,13 +108,18 @@ public class RecycleViewAdapter_chat extends RecyclerView.Adapter<RecycleViewAda
         ImageView friendImage;
         TextView friendName;
         TextView chatLog;
+        //MHorizontalScrollView horizontalScrollView;
+        //Button btDelete;
+
 
         public ViewHolder(View itemView) {
             super(itemView);
             friendImage = (ImageView) itemView.findViewById(R.id.ivHead);
             friendName = (TextView) itemView.findViewById(R.id.tvUserName);
             chatLog = (TextView) itemView.findViewById(R.id.tvContent);
-
+           // btDelete = (Button) itemView.findViewById(R.id.btDelete);
+            //horizontalScrollView = new MHorizontalScrollView(context);
+//            horizontalScrollView = (MHorizontalScrollView) itemView.findViewById(R.id.horizontalScrollView);
         }
     }
 }

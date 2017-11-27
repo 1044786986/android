@@ -106,7 +106,8 @@ public class MyPostActivity extends AppCompatActivity{
                     public void onResponse(Call call, Response response) throws IOException {
                         try {
                             String result = response.body().string();
-                            Log.i("aaa","result = " + result);
+                            Message message = handler.obtainMessage();
+
                             if(!result.equals("{\"post\":[]}")) {    //还有更多帖子
                                 JSONObject jsonObject = new JSONObject(result);
                                 JSONArray jsonArray = jsonObject.getJSONArray("data");
@@ -129,12 +130,12 @@ public class MyPostActivity extends AppCompatActivity{
                                     shareBean.setList(list.get(i).getList());
                                     datalist.add(shareBean);
                                 }
-                                Log.i("aaa","list.size = " + datalist.size());
-                                Message message = handler.obtainMessage();
                                 message.obj = "getPostTrue";
                                 message.sendToTarget();
+                            }else{
+                                message.obj = "NoMoreData";
+                                message.sendToTarget();
                             }
-
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -159,6 +160,8 @@ public class MyPostActivity extends AppCompatActivity{
                 if(progressDialog != null && progressDialog.isShowing()){
                     dismissProgressDialog();
                 }
+            }else if(string.equals("NoMoreData")){
+                Toast.makeText(MyPostActivity.this,"已经到底啦",Toast.LENGTH_SHORT).show();
             }
         }
     };

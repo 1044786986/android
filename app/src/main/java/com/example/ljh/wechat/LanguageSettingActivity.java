@@ -62,14 +62,15 @@ public class LanguageSettingActivity extends AppCompatActivity{
     }
 
     public void showLanguageDialog(){
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        /*radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
                 currentLanguage = checkedId - reduceId;
+                Log.i("aa","checkedId = " + checkedId);
                 editor.putString("currentLanguage",LanguageString[currentLanguage]);
                 editor.commit();
             }
-        });
+        });*/
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(view);
@@ -82,6 +83,19 @@ public class LanguageSettingActivity extends AppCompatActivity{
                 startActivity(intent);
                 /*android.os.Process.killProcess(android.os.Process.myPid());
                 System.exit(0);*/
+                switch (radioGroup.getCheckedRadioButtonId()){
+                    case R.id.rbDefault:
+                        currentLanguage = 0;
+                        break;
+                    case R.id.rbChinese:
+                        currentLanguage = 1;
+                        break;
+                    case R.id.rbEnglish:
+                        currentLanguage = 2;
+                        break;
+                }
+                editor.putString("currentLanguage",LanguageString[currentLanguage]);
+                editor.commit();
             }
         });
         AlertDialog alertDialog = builder.create();

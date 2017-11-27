@@ -48,6 +48,16 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".AActivity"
+            android:label="我爱珊珊">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <activity android:name=".AnimationActivity" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".MainActivity" />
@@ -64,6 +74,8 @@
         <activity android:name=".LanguageSettingActivity"/>
         <activity android:name=".PostActivity"/>
         <activity android:name=".MyPostActivity"/>
+        <activity android:name=".ModifyPasswordActivity"/>
+        <activity android:name=".MyInformationActivity"/>
     </application>
 
 </manifest>

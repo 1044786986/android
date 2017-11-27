@@ -143,7 +143,7 @@ public class Fragment_all extends Fragment{
                     public void onResponse(Call call, Response response) throws IOException {
                         try {
                             String result = response.body().string();
-                            Log.i("aaa","result = " + result);
+                            Message message = handler.obtainMessage();
                             if(!result.equals("{\"post\":[]}")) {    //还有更多帖子
 
                                 JSONObject jsonObject = new JSONObject(result);
@@ -167,12 +167,12 @@ public class Fragment_all extends Fragment{
                                     shareBean.setList(list.get(i).getList());
                                     datalist.add(shareBean);
                                 }
-                                Log.i("aaa","list.size = " + datalist.size());
-                                Message message = handler.obtainMessage();
                                 message.obj = "getPostTrue";
                                 message.sendToTarget();
+                            }else{
+                                message.obj = "NoMoreData";
+                                message.sendToTarget();
                             }
-
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -184,7 +184,6 @@ public class Fragment_all extends Fragment{
     }
 
     public void upDataPost(){
-
         ExecutorService executorService = ThreadManager.startThread();
         executorService.execute(new Runnable() {
             @Override
@@ -270,7 +269,8 @@ public class Fragment_all extends Fragment{
             } else if (string.equals("getPostTrue")){
                 recyclerViewAdapter_share.notifyDataSetChanged();   //更新列表
                 initId();                                          //更新第一个帖子和最后一个帖子的流水号
-
+            }else if(string.equals("NoMoreData")){
+                Toast.makeText(getActivity(),"已经到底啦",Toast.LENGTH_SHORT).show();
             }
             /**
              * 隐藏动画效果

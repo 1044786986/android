@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,6 +17,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -73,6 +75,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -91,7 +94,6 @@ import cn.finalteam.galleryfinal.model.PhotoInfo;
 
 public class fragment_UserChat extends Fragment implements View.OnClickListener{
     private static RecyclerView recyclerView,recyclerView_ppw;
-    //private ListView listView;  //聊天消息操作选择列表
     private LinearLayoutManager linearLayoutManager;
     private ImageView ivVoice,ivSendImage,ivMessage;  //语音按键，显示语音状态，发送图片,用户信息
     private ImageView ivAlbum,ivCamera; //打开相册,打开相机
@@ -101,23 +103,22 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
     private static TextView tvBack; //返回键
     private LinearLayout linearLayout_UserChat,linearLayout_SendImage;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private PopupWindowCompat popupWindowCompat;
     private PopupWindow popupWindow;
+    private PopupWindow popupWindow_etMessage;
     private View view;
     private View popupWindowView;
 
-
+    private int _id = 0;
     private Uri uri;
     private static String toUser;  //好友名字
     private int Voice_State = 0; //非语音模式状态
-    private static int n,m;
     private float startY; //记录手指落下的Y轴位置
     private static float time = 0f; //录音时间
     private boolean isVocing = false; //判断是否正在录音
 
-    private static List<Chat_LogBean> datalist;    //历史聊天记录
-    private List<Chat_LogBean> datalist2;
+    static List<Chat_LogBean> datalist;    //历史聊天记录
     private List<String> ppwList;  //PopuWindow数据源
+    private final String etMessagePPw[] = {"全部复制","选择","粘贴"};
 
     private SQLiteDatabase sqLiteDatabase;
     private static Handler handler = new Handler(Looper.getMainLooper());
@@ -141,11 +142,8 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
     CompressImageManager compressImageManager;  //压缩管理
     MClipboardManager mClipboardManager; //复制粘贴管理
 
-   // AudioFinishRecorderListener audioFinishRecorderListener;
-
     public fragment_UserChat(String toUser){
         this.toUser = toUser;
-        //path = Environment.getExternalStorageDirectory().getPath();
     }
 
     public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState) {
@@ -157,36 +155,31 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
         mediaRecorderManager = new MediaRecorderManager(getActivity());
         dialogManager = new DialogManager(getActivity());
         compressImageManager = new CompressImageManager();
-        datalist = fragmentChat.getDatalist(toUser);
-        datalist2 = new ArrayList<Chat_LogBean>();
+        sqLiteDatabase = getActivity().openOrCreateDatabase("ljh.db",0,null);
+
+        datalist = new ArrayList<Chat_LogBean>();
         ppwList = new ArrayList<String>();
-        n = datalist.size()-20;
-        m = datalist.size();
-        setDatalist();
+
         addppwList();
         initView(view);
-        initPopuWindow();
+        initPopupWindow();
         voicing();
+
+        getChatLog();   //获取聊天记录
+        if(datalist.size() != 0 && datalist != null) {
+            _id = datalist.get(0).getId();  //当前好友第一条聊天记录的id
+            int a = _id;
+        }
         //initSocket();
         //getPermission();
-        sqLiteDatabase = getActivity().openOrCreateDatabase("ljh.db",0,null);
         return view;
     }
-
-  /*  public interface AudioFinishRecorderListener{
-        void onFinish(float seconds,String filePath);
-    }
-
-    public void setAudioFinishRecorderListener(AudioFinishRecorderListener audioFinishRecorderListener){
-        this.audioFinishRecorderListener = audioFinishRecorderListener;
-    }*/
 
     @Override
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.tvBack:
                 getActivity().finish();
-                sqLiteDatabase.close();
                 break;
             /**
              * 切换输入和语音模式
@@ -370,22 +363,6 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
 
     }
 
-
-    /**
-     * recycleview分页
-     */
-    public void setDatalist(){
-        if(m >= 20){
-            for(int i = m-1; i > n;i--){
-                datalist2.add(0,datalist.get(i));
-            }
-            m = m - 20;
-            n = n - 20;
-        }else{
-            datalist2 = datalist;
-        }
-    }
-
     /**
      * 打开相册
      */
@@ -477,8 +454,6 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == getActivity().RESULT_OK){
-                /*Bitmap bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(uri));
-                bitmap = CompressImage(bitmap)*/
                 Bitmap bitmap = compressImageManager.CompressToCamera(getActivity(),uri);
                 sendCameraImageMessage(bitmap);
         }
@@ -530,7 +505,8 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
                         break;
                     case 3:             //删除
                         deleteChatLog(position);
-                        updateAdapter();
+                        fragmentChat.deleteChatLog(toUser,position);
+                        recycleViewAdapter_userChat.notifyDataSetChanged();
                         break;
                 }
                 popupWindow.dismiss();
@@ -539,9 +515,16 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
     }
 
     /**
+     *
+     */
+    public void showPPwEtMessage(){
+
+    }
+
+    /**
      * 初始化popupWindow
      */
-    public void initPopuWindow(){
+    public void initPopupWindow(){
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         popupWindowView = LayoutInflater.from(getActivity()).inflate(R.layout.popuwindow_userchat,null);
         recyclerView_ppw = (RecyclerView) popupWindowView.findViewById(R.id.ListView_ppw_userchat);
@@ -554,18 +537,6 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
         popupWindow.setContentView(popupWindowView);
     }
 
-    /**
-     * 隐藏键盘
-     */
-    public void hideInputMethod(View view){
-        InputMethodManager inputMethodManager
-                = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(),0);
-
-        if(linearLayout_SendImage.isShown()){
-            linearLayout_SendImage.setVisibility(View.GONE);
-        }
-    }
 
     /**
      * 发送文字消息给好友
@@ -757,6 +728,114 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
     }
 
     /**
+     * 加载聊天记录
+     */
+    public void getChatLog() {
+        /**
+         * 我发给好友的记录
+         */
+        List<Chat_LogBean> LogList = new ArrayList<Chat_LogBean>();
+        Cursor cursor1 =
+                sqLiteDatabase.query("chat_log", new String[]{"_id", "fromUser", "toUser", "text", "image", "date", "voicePath"},
+                        "fromUser=? and toUser=?", new String[]{MainActivity.username, toUser}, null, null, "date DESC", "7");
+        while (cursor1.moveToNext()) {
+            int _id = cursor1.getInt(cursor1.getColumnIndex("_id"));
+            String fromUser = cursor1.getString(cursor1.getColumnIndex("fromUser"));
+            String toUser = cursor1.getString(cursor1.getColumnIndex("toUser"));
+            String text = cursor1.getString(cursor1.getColumnIndex("text"));
+            byte image[] = cursor1.getBlob(cursor1.getColumnIndex("image"));
+            String date = cursor1.getString(cursor1.getColumnIndex("date"));
+            String voicePath = cursor1.getString(cursor1.getColumnIndex("voicePath"));
+            LogList.add(new Chat_LogBean(_id, fromUser, toUser, text, image, date, voicePath));
+        }
+        /**
+         * 好友发给我的记录
+         */
+        Cursor cursor2 =
+                sqLiteDatabase.query("chat_log", new String[]{"_id", "fromUser", "toUser", "text", "image", "date", "voicePath"},
+                        "fromUser=? and toUser=?", new String[]{toUser, MainActivity.username}, null, null, "date DESC", "7");
+
+        while (cursor2.moveToNext()) {
+            int _id = cursor2.getInt(cursor2.getColumnIndex("_id"));
+            String fromUser = cursor2.getString(cursor2.getColumnIndex("fromUser"));
+            String toUser = cursor2.getString(cursor2.getColumnIndex("toUser"));
+            String text = cursor2.getString(cursor2.getColumnIndex("text"));
+            byte image[] = cursor2.getBlob(cursor2.getColumnIndex("image"));
+            String date = cursor2.getString(cursor2.getColumnIndex("date"));
+            String voicePath = cursor2.getString(cursor2.getColumnIndex("voicePath"));
+            LogList.add(new Chat_LogBean(_id, fromUser, toUser, text, image, date, voicePath));
+        }
+
+        if (LogList.size() != 0) {
+            Collections.sort(LogList, new ChatLogCompartor());  //按日期进行排序
+            for (int i = LogList.size()-1; i >= 0; i--) {
+                datalist.add(0, LogList.get(i));
+            }
+            LogList.clear();
+            updateAdapter();
+
+        }
+    }
+
+    /**
+     * 下滑加载聊天记录
+     */
+    public void loadChatLog(){
+        /**
+         * 我发给好友的记录
+         */
+        List<Chat_LogBean>LogList = new ArrayList<Chat_LogBean>();
+        Cursor cursor1 =
+                sqLiteDatabase.query("chat_log",new String[]{"_id","fromUser","toUser","text","image","date","voicePath"},
+                        "_id<? and fromUser=? and toUser=?",new String[]{_id+"",MainActivity.username,toUser},null,null,"date DESC","10");
+        while (cursor1.moveToNext()) {
+            int _id = cursor1.getInt(cursor1.getColumnIndex("_id"));
+            String fromUser = cursor1.getString(cursor1.getColumnIndex("fromUser"));
+            String toUser = cursor1.getString(cursor1.getColumnIndex("toUser"));
+            String text = cursor1.getString(cursor1.getColumnIndex("text"));
+            byte image[] = cursor1.getBlob(cursor1.getColumnIndex("image"));
+            String date = cursor1.getString(cursor1.getColumnIndex("date"));
+            String voicePath = cursor1.getString(cursor1.getColumnIndex("voicePath"));
+            LogList.add(new Chat_LogBean(_id,fromUser, toUser, text,image, date,voicePath));
+        }
+        /**
+         * 好友发给我的记录
+         */
+        Cursor cursor2 =
+                sqLiteDatabase.query("chat_log",new String[]{"_id","fromUser","toUser","text","image","date","voicePath"},
+                        "_id<? and fromUser=? and toUser=?",new String[]{_id+"",toUser,MainActivity.username},null,null,"date DESC","10");
+
+        while (cursor2.moveToNext()) {
+            int _id = cursor2.getInt(cursor2.getColumnIndex("_id"));
+            String fromUser = cursor2.getString(cursor2.getColumnIndex("fromUser"));
+            String toUser = cursor2.getString(cursor2.getColumnIndex("toUser"));
+            String text = cursor2.getString(cursor2.getColumnIndex("text"));
+            byte image[] = cursor2.getBlob(cursor2.getColumnIndex("image"));
+            String date = cursor2.getString(cursor2.getColumnIndex("date"));
+            String voicePath = cursor2.getString(cursor2.getColumnIndex("voicePath"));
+            LogList.add(new Chat_LogBean(_id,fromUser, toUser, text,image, date,voicePath));
+        }
+
+        if(LogList.size() != 0){
+            Collections.sort(LogList, new ChatLogCompartor());  //按日期进行排序
+            for(int i = LogList.size()-1;i >= 0;i--){
+                datalist.add(0,LogList.get(i));
+            }
+            _id = datalist.get(0).getId();      //重置第一条记录的id
+            LogList.clear();
+            recycleViewAdapter_userChat.notifyDataSetChanged();
+        }else{
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getActivity(),"已经没有更多啦",Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+        swipeRefreshLayout.setRefreshing(false);
+    }
+
+    /**
      * 删除一条聊天记录
      */
     public void deleteChatLog(int position){
@@ -781,10 +860,24 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
      * PopuWindow增加数据
      */
     public void addppwList(){
+        ppwList.clear();
         ppwList.add("复制");
         ppwList.add("转发");
         ppwList.add("更多");
         ppwList.add("删除");
+    }
+
+    /**
+     * 隐藏键盘
+     */
+    public void hideInputMethod(View view){
+        InputMethodManager inputMethodManager
+                = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(),0);
+
+        if(linearLayout_SendImage.isShown()){
+            linearLayout_SendImage.setVisibility(View.GONE);
+        }
     }
 
     static void updateAdapter(){
@@ -795,9 +888,6 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
                     tvBack.setText("返回" + "(" + MainActivity.ChatCount + ")");
                 }else{
                     tvBack.setText("返回");
-                }
-                if(datalist == null || datalist.size() == 0){
-                    datalist = fragmentChat.getDatalist(toUser);
                 }
                 recycleViewAdapter_userChat.notifyDataSetChanged();
                 recyclerView.scrollToPosition(recycleViewAdapter_userChat.getItemCount()-1);//定位到底部
@@ -828,6 +918,7 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
         if(sqLiteDatabase.isOpen()){
             sqLiteDatabase.close();
         }
+        datalist.clear();
         /*try {
             outputStream.close();
             outputStreamWriter.close();
@@ -895,14 +986,19 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
                 }
             }
         });
+        etMessage.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                //popupWindow
+                return false;
+            }
+        });
 
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                setDatalist();
-                recycleViewAdapter_userChat.notifyDataSetChanged();
-                swipeRefreshLayout.setRefreshing(false);
+                loadChatLog();
             }
         });
     }

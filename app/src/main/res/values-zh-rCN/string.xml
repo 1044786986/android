@@ -63,4 +63,10 @@
     <string name="followingSystem">跟随系统</string>
     <string name="saySth">说点什么吧...</string>
     <string name="delete">删除</string>
+    <string name="modifyPassword">修改密码</string>
+    <string name="originalPassword">原始密码:</string>
+    <string name="sure">确认</string>
+    <string name="submit">提交</string>
+    <string name="clearChatLog">清空聊天记录</string>
+    <string name="remAccount">保存帐号</string>
 </resources>

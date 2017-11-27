@@ -54,6 +54,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     static final String  SearchFriendsServlet = "http://" + Ip +":8080/wechat/SearchFriendsServlet";
     static final String SetPostServlet = "http://" + Ip + ":8080/wechat/SetPostServlet2";
     static final String GetPostServlet = "http://" + Ip + ":8080/wechat/GetPost";
+    static final String RegisterServlet = "http://" + Ip + ":8080/wechat/RegisterServlet";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

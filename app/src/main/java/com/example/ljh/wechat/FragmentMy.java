@@ -81,6 +81,10 @@ public class FragmentMy extends Fragment implements View.OnClickListener{
                 intent = new Intent(getActivity(),SetUpActivity.class);
                 startActivity(intent);
                 break;
+            case R.id.layout_myInformation:
+                intent = new Intent(getActivity(),MyInformationActivity.class);
+                startActivity(intent);
+                break;
             case R.id.layout_quit:
                 SharedPreferences.Editor editor = LoginActivity.editor;
                 editor.remove("password");  //取消记住密码自动登录

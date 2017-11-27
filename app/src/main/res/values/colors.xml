@@ -17,4 +17,5 @@
     <color name="PreViewBackground">#000000</color>
     <color name="selectTabText">#00BCD4</color>
     <color name="shareButtonText">#8B8B8B</color>
+    <color name="deleteButton">#FF4081</color>
 </resources>

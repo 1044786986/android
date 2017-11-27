@@ -5,7 +5,7 @@ package com.example.ljh.wechat;
  */
 
 public class Chat_LogBean {
-
+    private int id;
     private String fromUser;
     private String toUser;
     private String text;
@@ -13,13 +13,22 @@ public class Chat_LogBean {
     private String date;
     private String voicePath;
 
-    Chat_LogBean(String fromUser, String toUser, String text, byte image[], String date,String voicePath){
+    Chat_LogBean(int id,String fromUser, String toUser, String text, byte image[], String date,String voicePath){
+        this.id = id;
         this.fromUser = fromUser;
         this.toUser = toUser;
         this.text = text;
         this.image = image;
         this.date = date;
         this.voicePath = voicePath;
+    }
+
+    public int getId(){
+        return id;
+    }
+
+    public void setId(int id){
+        this.id = id;
     }
 
     public String getVoicePath() {

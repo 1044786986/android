@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="permissionDenied">请在手机开启权限</string>
-    <string name="remAccount">保存帐号</string>
-</resources>

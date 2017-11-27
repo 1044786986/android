@@ -67,4 +67,9 @@
     <string name="followingSystem">Following system</string>
     <string name="saySth">Say Something...</string>
     <string name="delete">delete</string>
+    <string name="modifyPassword">Modify Password</string>
+    <string name="originalPassword">Original Password</string>
+    <string name="sure">sure</string>
+    <string name="submit">submit</string>
+    <string name="clearChatLog">Clear Chat Log</string>
 </resources>

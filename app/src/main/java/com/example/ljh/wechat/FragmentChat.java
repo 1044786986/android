@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.SearchView;
 
 import com.google.gson.Gson;
@@ -57,18 +58,18 @@ public class FragmentChat extends Fragment{
     private SearchView searchView;
     private LinearLayout fragment_chat_layout;
     private LinearLayoutManager linearLayoutManager;
+    private PopupWindow popupWindow;
 
-    private static List<List_chat_logBean> datalist;//所有数据集
-    private static List<List_chat_logBean> datalist2;
+    private int id = 0;
+    static List<List_chat_logBean> datalist;//所有数据集
     private List<AddressBean> userlist;
+    private List<Chat_LogBean> userChatLogList = new ArrayList<Chat_LogBean>();//当前选择的用户的聊天记录
 
     private static RecycleViewAdapter_chat recycleViewAdapter_chat;
     private RecycleViewAdapter_chat.ViewHolder viewHolder;
 
     private static Handler handler = new Handler(Looper.getMainLooper());
     private OkHttpClient okHttpClient;
-
-    private String url = MainActivity.SearchFriendsServlet;
 
     public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat,null,false);
@@ -80,7 +81,7 @@ public class FragmentChat extends Fragment{
 
         datalist = new ArrayList<List_chat_logBean>();
         userlist = new ArrayList<AddressBean>();
-        datalist2 = new ArrayList<List_chat_logBean>();
+
         initView(view);
         new Thread(){
             @Override
@@ -119,37 +120,46 @@ public class FragmentChat extends Fragment{
                 /**
                  * 我发给好友的记录
                  */
+
                 Cursor cursor1 =
-                        sqLiteDatabase.query("chat_log",new String[]{"fromUser","toUser","text","image","date","voicePath"},
-                        "fromUser=? and toUser=?",new String[]{MainActivity.username,friendName},null,null,null);
+                        sqLiteDatabase.query("chat_log",new String[]{"_id","fromUser","toUser","text","image","date","voicePath"},
+                                "fromUser=? and toUser=?",new String[]{MainActivity.username,friendName},null,null,"date DESC","10");
                 while (cursor1.moveToNext()) {
+                    int _id = cursor1.getInt(cursor1.getColumnIndex("_id"));
                     String fromUser = cursor1.getString(cursor1.getColumnIndex("fromUser"));
                     String toUser = cursor1.getString(cursor1.getColumnIndex("toUser"));
                     String text = cursor1.getString(cursor1.getColumnIndex("text"));
                     byte image[] = cursor1.getBlob(cursor1.getColumnIndex("image"));
                     String date = cursor1.getString(cursor1.getColumnIndex("date"));
                     String voicePath = cursor1.getString(cursor1.getColumnIndex("voicePath"));
-                    LogList.add(new Chat_LogBean(fromUser, toUser, text,image, date,voicePath));
+                    LogList.add(new Chat_LogBean(_id,fromUser, toUser, text,image, date,voicePath));
                 }
                 /**
                  * 好友发给我的记录
                  */
                 Cursor cursor2 =
-                        sqLiteDatabase.query("chat_log",new String[]{"fromUser","toUser","text","image","date","voicePath"},
-                                "fromUser=? and toUser=?",new String[]{friendName,MainActivity.username},null,null,null);
+                            sqLiteDatabase.query("chat_log",new String[]{"_id","fromUser","toUser","text","image","date","voicePath"},
+                                    "fromUser=? and toUser=?",new String[]{friendName,MainActivity.username},null,null,"date DESC","10");
                 while (cursor2.moveToNext()) {
+                    int _id = cursor2.getInt(cursor2.getColumnIndex("_id"));
                     String fromUser = cursor2.getString(cursor2.getColumnIndex("fromUser"));
                     String toUser = cursor2.getString(cursor2.getColumnIndex("toUser"));
                     String text = cursor2.getString(cursor2.getColumnIndex("text"));
                     byte image[] = cursor2.getBlob(cursor2.getColumnIndex("image"));
                     String date = cursor2.getString(cursor2.getColumnIndex("date"));
                     String voicePath = cursor2.getString(cursor2.getColumnIndex("voicePath"));
-                    LogList.add(new Chat_LogBean(fromUser, toUser, text,image, date,voicePath));
+                    LogList.add(new Chat_LogBean(_id,fromUser, toUser, text,image, date,voicePath));
                 }
 
                 if(LogList.size() != 0){
                     Collections.sort(LogList, new ChatLogCompartor());  //按日期进行排序
                     datalist.add(new List_chat_logBean(friendName,LogList,0));
+                }
+                /**
+                 * 对临时聊天列表进行排序
+                 */
+                if(datalist.size() != 0){
+                    Collections.sort(datalist,new UserListCompartor());
                 }
             }
 
@@ -160,6 +170,7 @@ public class FragmentChat extends Fragment{
         recycleViewAdapter_chat.setRecycleViewItemClickListener(new RecycleViewAdapter_chat.RecycleViewItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
+                Log.i("aa","positon = " + position);
                 viewHolder = new RecycleViewAdapter_chat.ViewHolder(view);
                 int count = datalist.get(position).getUnread(); //记录当前好友有多少未读消息
                 MainActivity.HideRemind(1,count);   //刷新总共未读消息
@@ -194,21 +205,26 @@ public class FragmentChat extends Fragment{
             }
             name = toUser;
         }
+
+        int _id = 1;
+        if(datalist.size() != 0 && datalist.get(0).getList().size() != 0){
+             _id = datalist.get(0).getList().get(datalist.get(0).getList().size()-1).getId() + 1;//数据库聊天记录最大的Id
+        }
         //i等于datalist的长度的话,该用户不存在于聊天记录表,增加该用户和聊天记录
         if(i == datalist.size() && fromUser.equals(MainActivity.username)){
             List<Chat_LogBean>list = new ArrayList<Chat_LogBean>(); //临时聊天记录集合
-            list.add(new Chat_LogBean(fromUser,toUser,text,image,date,voicePath));
+            list.add(new Chat_LogBean(_id,fromUser,toUser,text,image,date,voicePath));
             datalist.add(new List_chat_logBean(name,list,0));
         }else if(i == datalist.size() && !fromUser.equals(MainActivity.username)){
             List<Chat_LogBean>list = new ArrayList<Chat_LogBean>(); //临时聊天记录集合
-            list.add(new Chat_LogBean(fromUser,toUser,text,image,date,voicePath));
+            list.add(new Chat_LogBean(_id,fromUser,toUser,text,image,date,voicePath));
             datalist.add(new List_chat_logBean(name,list,1));
         }
         else if(i != datalist.size() && fromUser.equals(MainActivity.username)){   //我发送的消息
-            datalist.get(i).getList().add(new Chat_LogBean(fromUser,toUser,text,image,date,voicePath));
+            datalist.get(i).getList().add(new Chat_LogBean(_id,fromUser,toUser,text,image,date,voicePath));
             //updataFriendItem(i); //更新好友位置
         }else if(i != datalist.size() && !fromUser.equals(MainActivity.username)){  //我接受的消息
-            datalist.get(i).getList().add(new Chat_LogBean(fromUser,toUser,text,image,date,voicePath));
+            datalist.get(i).getList().add(new Chat_LogBean(_id,fromUser,toUser,text,image,date,voicePath));
             if(!datalist.get(i).getUsername().equals(UserChatActivity.toUser)){
                 datalist.get(i).setUnread(datalist.get(i).getUnread() + 1); //增加未读消息数量
             }
@@ -217,12 +233,35 @@ public class FragmentChat extends Fragment{
         updataFriendItem(i); //更新好友位置
 
         if(UserChatActivity.UserChat_State == 1) {  //更新聊天界面列表
+            if(fragment_UserChat.datalist.size() == 0){     //没有记录的话更新list
+                //fragment_UserChat.datalist = getDatalist(toUser);
+                String a = toUser;
+            }
+            //fragment_UserChat.datalist = getDatalist(toUser);
+            fragment_UserChat.datalist.add(new Chat_LogBean(_id,fromUser,toUser,text,image,date,voicePath));
             fragment_UserChat.updateAdapter();
             Log.i("aa","fragment_UserChat.updateAdapter();");
         }else{
             updateAdapter();
             Log.i("aa","updateAdapter();");
         }
+    }
+
+    /**
+     * 删除某个好友的一条聊天记录
+     */
+    public void deleteChatLog(String toUser,int position){
+        int i;
+        for(i=0;i<datalist.size();i++){
+            if(datalist.get(i).getUsername().equals(toUser)){
+                break;
+            }
+        }
+        if(position < datalist.get(i).getList().size()){
+            datalist.get(i).getList().remove(position);
+            updateAdapter();
+        }
+
     }
 
     /**
@@ -245,12 +284,12 @@ public class FragmentChat extends Fragment{
      */
     public List<Chat_LogBean> getDatalist(String friendName){
         int i;
-        List<Chat_LogBean>list = new ArrayList<Chat_LogBean>();
         for(i=0;i<datalist.size();i++){
             if(datalist.get(i).getUsername().equals(friendName)){
                 break;
             }
         }
+        List<Chat_LogBean> list = new ArrayList<Chat_LogBean>();
         if(i != datalist.size()){
             list = datalist.get(i).getList();
         }
@@ -274,7 +313,7 @@ public class FragmentChat extends Fragment{
 
                 final Request request = new Request.Builder()
                         .post(requestBody)
-                        .url(url)
+                        .url(MainActivity.SearchFriendsServlet)
                         .build();
 
                 okHttpClient.newCall(request).enqueue(new Callback() {
@@ -370,6 +409,8 @@ public class FragmentChat extends Fragment{
                 inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(),0);
             }
         });
+
+        //popupWindow = new PopupWindow()
     }
 
 }

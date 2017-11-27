@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.NotificationCompat;
 
 import java.util.ArrayList;
@@ -40,7 +41,8 @@ public class NotificationManager1 {
          * 开启声音提醒后
          */
         if(MessageRemindActivity.voice){
-            builder.setDefaults(Notification.DEFAULT_SOUND);
+            //builder.setDefaults(Notification.DEFAULT_SOUND);
+            builder.setSound(Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.sound));
         }
         /**
          * 开启震动提醒后
