@@ -38,7 +38,8 @@ public class RecyclerViewAdapter_post extends RecyclerView.Adapter<RecyclerViewA
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.tvUsername.setText(datalist.get(position).getUsername());
-        holder.tvFloor.setText("#" + (position+1));
+        int floor = position + 1;
+        holder.tvFloor.setText("#" + floor);
         holder.tvDate.setText(datalist.get(position).getDate());
         holder.ivHead.setImageBitmap(preViewManager.StringToBitmap(datalist.get(position).getHeadString()));
         holder.tvContent.setText(datalist.get(position).getContent());

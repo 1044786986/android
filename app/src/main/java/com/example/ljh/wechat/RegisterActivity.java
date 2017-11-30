@@ -11,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,7 +34,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private TextView tvLogin;
     private EditText etUserName,etPassWord,etPassWord2,etEmail;
     private Button btRegister;
-    private String url = "http://192.168.191.1:8080/wechat/RegisterServlet";
     private OkHttpClient okHttpClient;
     RegisterBean bean;
     private String username,password,password2,email;
@@ -101,7 +99,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
                 Request request = new Request.Builder()
                         .post(requestBody)
-                        .url(url)
+                        .url(MainActivity.RegisterServlet)
                         .build();
 
                 okHttpClient.newCall(request).enqueue(new Callback() {

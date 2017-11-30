@@ -3,21 +3,15 @@ package com.example.ljh.wechat;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -33,19 +27,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,25 +40,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.net.Socket;
-import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 /**
  * Created by ljh on 2017/9/14.
@@ -100,6 +72,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     static DatabaseHelper databaseHelper;
     static SQLiteDatabase sqLiteDatabase;
 
+    private IntentFilter intentFilter;
+    private NetWorkChangeReceiver mNetWorkChangeReceiver;
     FragmentAddress fragmentAddress;
 
     @Override
@@ -110,6 +84,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         databaseHelper = new DatabaseHelper(LoginActivity.this,"ljh.db",null,2);
         sqLiteDatabase = databaseHelper.getReadableDatabase();
         result = null;
+        initNetWorkChangeReceiver();
         initView();
         getSetting();
         Check();
@@ -134,6 +109,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 break;
             case R.id.tvRegister:
                 Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                //intent.getPare
                 startActivity(intent);
                 break;
 
@@ -417,6 +393,33 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             conf.setLocale(Locale.ENGLISH);
         }
         res.updateConfiguration(conf, dm);
+    }
+
+    /**
+     * 监听网络广播
+     */
+    public void initNetWorkChangeReceiver(){
+        intentFilter = new IntentFilter();
+        intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        mNetWorkChangeReceiver = new NetWorkChangeReceiver();
+        registerReceiver(mNetWorkChangeReceiver,intentFilter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mNetWorkChangeReceiver);
     }
 
     /**

@@ -57,7 +57,7 @@ public class HeaderAdapter extends RecyclerView.Adapter<HeaderAdapter.ViewHolder
         }
         int pos = getPosition(holder);
         holder.tvUsername.setText(datalist.get(pos).getUsername());
-        holder.tvFloor.setText("#" + pos);
+        holder.tvFloor.setText("#" + (pos+1));
         holder.tvDate.setText(datalist.get(pos).getDate());
         holder.ivHead.setImageBitmap(preViewManager.StringToBitmap(datalist.get(pos).getHeadString()));
         holder.tvContent.setText(datalist.get(pos).getContent());

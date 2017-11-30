@@ -1,33 +1,22 @@
 package com.example.ljh.wechat;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
-import android.os.AsyncTask;
-import android.os.Handler;
-import android.os.Message;
+import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.jauker.widget.BadgeView;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.Socket;
 
 public class MainActivity extends FragmentActivity implements View.OnClickListener{
     private static ImageButton ib_tab_chat,ib_tab_address,ib_tab_share,ib_tab_my;
@@ -44,9 +33,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     static int ChatCount = 0;
     private static boolean isFirstPlay = true;
 
-    private Handler handler = new Handler();
-
-    static FragmentAddress fragmentAddress;
+    IntentFilter intentFilter;
+    NetWorkChangeReceiver mNetWorkChangeReceiver;
+    FragmentAddress fragmentAddress;
     static MainActivity Instance;
 
     static final String Ip = "192.168.155.1";
@@ -72,12 +61,12 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         getUserName();  //获取当前用户名
         getSetting();
         initView();
+        initNetWorkChangeService();
         selected(4);
         selected(3);
         selected(2);
         fragmentAddress = new FragmentAddress();
     }
-
 
     @Override
     public void onClick(View view) {
@@ -266,6 +255,12 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         isFirstPlay = false;
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mNetWorkChangeReceiver);
+    }
+
     /**
      * 获取消息提醒设置
      */
@@ -273,6 +268,16 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         MessageRemindActivity messageRemindActivity = new MessageRemindActivity();
         //messageRemindActivity.addSharePreferences();
         messageRemindActivity.addSharePreferences();
+    }
+
+    /**
+     * 初始化网络广播
+     */
+    public void initNetWorkChangeService(){
+        intentFilter = new IntentFilter();
+        intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        mNetWorkChangeReceiver = new NetWorkChangeReceiver();
+        registerReceiver(mNetWorkChangeReceiver,intentFilter);
     }
 
     public void initView(){

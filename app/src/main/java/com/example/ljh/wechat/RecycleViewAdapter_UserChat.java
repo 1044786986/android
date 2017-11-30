@@ -384,7 +384,6 @@ public class RecycleViewAdapter_UserChat extends RecyclerView.Adapter<RecycleVie
             mediaPlayer.setDataSource(fileDescriptor);
             mediaPlayer.prepare();
             time = (int)mediaPlayer.getDuration() / 1000;
-            Log.i("tag","-------------VoiceTime=" + time);
             mediaPlayer.release();
         } catch (IOException e) {
             e.printStackTrace();

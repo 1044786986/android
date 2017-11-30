@@ -1,7 +1,6 @@
 package com.example.ljh.wechat;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -9,30 +8,22 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
-import android.support.v4.widget.PopupWindowCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.util.Base64;
-import android.util.Base64InputStream;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -41,13 +32,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,30 +44,22 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileDescriptor;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import cn.finalteam.galleryfinal.CoreConfig;
 import cn.finalteam.galleryfinal.FunctionConfig;
@@ -93,7 +73,7 @@ import cn.finalteam.galleryfinal.model.PhotoInfo;
  */
 
 public class fragment_UserChat extends Fragment implements View.OnClickListener{
-    private static RecyclerView recyclerView,recyclerView_ppw;
+    private static RecyclerView recyclerView,recyclerView_ppw,recyclerView_ppw_message;
     private LinearLayoutManager linearLayoutManager;
     private ImageView ivVoice,ivSendImage,ivMessage;  //语音按键，显示语音状态，发送图片,用户信息
     private ImageView ivAlbum,ivCamera; //打开相册,打开相机
@@ -118,7 +98,7 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
 
     static List<Chat_LogBean> datalist;    //历史聊天记录
     private List<String> ppwList;  //PopuWindow数据源
-    private final String etMessagePPw[] = {"全部复制","选择","粘贴"};
+    private final String etMessage_PPwData[] = {"全部复制","选择","粘贴"};
 
     private SQLiteDatabase sqLiteDatabase;
     private static Handler handler = new Handler(Looper.getMainLooper());
@@ -472,7 +452,6 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
 
             @Override
             public void onLongItemClick(View view, int position) {
-                Log.i("aa","onLongItemClick");
                 showPopupWindow(view,position);
             }
         });
@@ -496,10 +475,10 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
             @Override
             public void OnItemClick(View view, int pos) {
                 switch (pos){
-                    case 0:             //转发
-                        break;
-                    case 1:             //复制
+                    case 0:             //复制
                         mClipboardManager.copyContent(datalist.get(position).getText());
+                        break;
+                    case 1:             //转发
                         break;
                     case 2:             //更多
                         break;
@@ -514,12 +493,7 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
         });
     }
 
-    /**
-     *
-     */
-    public void showPPwEtMessage(){
 
-    }
 
     /**
      * 初始化popupWindow
@@ -877,6 +851,9 @@ public class fragment_UserChat extends Fragment implements View.OnClickListener{
 
         if(linearLayout_SendImage.isShown()){
             linearLayout_SendImage.setVisibility(View.GONE);
+        }
+        if(popupWindow.isShowing()){
+            popupWindow.dismiss();
         }
     }
 
